@@ -18,11 +18,10 @@ The packages directory contains the different npm packages.
 You would only do this once after you cloned the repository.
 
 1. Clone this repository from git.
-1. `cd` into `sfdx-dev-packages`.
+1. `cd` into `command`.
 1. We develop using feature brances off `main` and release from the `main` branch. At
    this point, it should be set to `main` by default. If not, run `git checkout -t origin/main`.
 1. `yarn` to bring in all the top-level dependencies.
-1. `yarn bootstrap` to setup and link all packages.
 1. Open the project in your editor of choice.
 
 ## When you are ready to commit
@@ -32,39 +31,28 @@ You would only do this once after you cloned the repository.
 
 ## List of Useful commands
 
-_These commands assume that they are executed from the top-level directory.
-Internally, they delegate to `lerna` to call them on each npm module in the
-packages directory._
-
-### `yarn bootstrap`
-
-This bootstraps the packages by issuing an `yarn install` on each package and
-also symlinking any package that are part of the packages folder.
-
-You would want do this as the first step after you have made changes in the
-modules.
-
-If you change the dependencies in your package.json, you will also need to run
-this command.
-
 ### `yarn compile`
 
-This runs `yarn compile` on each of the package in packages.
+This compiles the typescript to javascript.
 
 ### `yarn clean`
 
-This run `yarn clean` on each of the package in packages. Running `yarn clean-all` will also clean up the node_module directories.
+This cleans all generated files and directories. Run `yarn clean-all` to also clean up the node_module directories.
 
 ### `yarn test`
 
-This runs `yarn test` on each of the packages.
+This tests the typescript using ts-node.
+
+### `yarn docs`
+
+This generates documentation into [docs](docs).
 
 ### `yarn lint`
 
-This runs `yarn lint` on each of the packages. If there are no errors/warnings
-from tslint, then you get a clean output. But, if they are errors from tslint,
+This lints all the typescript. If there are no errors/warnings
+from tslint, then you get clean output. But, if there are errors from tslint,
 you will see a long error that can be confusing – just focus on the tslint
-errors. The results of this is deeper than what the tslint extension in VS Code
+errors. The results of this are deeper than what the tslint extension in VS Code
 does because of [semantic lint
 rules](https://palantir.github.io/tslint/usage/type-checking/) which requires a
 tsconfig.json to be passed to tslint.
