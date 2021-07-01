@@ -29,3 +29,11 @@ workflows:
             branches:
               only: main
           context: CLI_CTC
+  dependabot-automerge:
+    triggers:
+      - schedule:
+          cron: '0 2,5,8,11 * * *'
+          filters:
+            branches:
+              only:
+                - main
