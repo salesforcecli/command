@@ -52,7 +52,7 @@
   "devDependencies": {
     "@oclif/config": "^1.15.1",
     "@salesforce/dev-config": "^2.0.0",
-    "@salesforce/dev-scripts": "^0.6.2",
+    "@salesforce/dev-scripts": "^0.9.15",
     "@salesforce/prettier-config": "^0.0.1",
     "@salesforce/ts-sinon": "^1.1.0",
     "@typescript-eslint/eslint-plugin": "^2.30.0",
