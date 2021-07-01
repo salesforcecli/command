@@ -29,6 +29,16 @@ workflows:
             branches:
               only: main
           context: CLI_CTC
+  test-ts-update:
+    triggers:
+      - schedule:
+          cron: 0 0 * * *
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - release-management/test-ts-update
   dependabot-automerge:
     triggers:
       - schedule:
@@ -37,3 +47,5 @@ workflows:
             branches:
               only:
                 - main
+    jobs:
+      - release-management/dependabot-automerge
