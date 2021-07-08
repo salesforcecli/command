@@ -32,3 +32,7 @@ If you are interested in building this package locally, please take a look at th
 - [@salesforce/command](https://github.com/salesforcecli/command) - Contains the base Salesforce CLI command, `SfdxCommand`.
 - [@oclif/command](https://github.com/oclif/command) - Contains the base oclif `Command`, which `SfdxCommand` extends.
 - [@salesforce/plugin-generator](https://github.com/forcedotcom/sfdx-plugin-generate) - The generator plug-in for building plug-ins for Salesforce CLI.
+
+## Issues
+
+Please report any issues here: https://github.com/forcedotcom/cli/issues
