@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/command",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "Salesforce CLI base command class",
   "main": "lib/exported",
   "repository": "https://github.com/salesforcecli/command",
@@ -16,7 +16,8 @@
     "prepack": "sf-build",
     "prepare": "npm run build",
     "pretest": "sf-compile-test",
-    "test": "sf-test"
+    "test": "sf-test",
+    "ci-docs": "yarn sf-ci-docs"
   },
   "keywords": [
     "force",
