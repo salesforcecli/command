@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2021, salesforce.com, inc.
  * All rights reserved.
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -539,7 +539,8 @@ export abstract class SfdxCommand extends Command {
   /**
    * register events for command specific hooks
    */
-  private async hooksFromLifecycleEvent(lifecycleEventNames: string[]): Promise<void> { // eslint-disable-line @typescript-eslint/require-await, prettier/prettier
+  private async hooksFromLifecycleEvent(lifecycleEventNames: string[]): Promise<void> {
+    // eslint-disable-line @typescript-eslint/require-await, prettier/prettier
     // eslint-disable-line prettier/prettier, @typescript-eslint/require-await
     const options = {
       Command: this.ctor,
