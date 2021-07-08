@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 4.0.1 (2021-07-08)
+
+
+### Features
+
+* publish ([7f4ff78](https://github.com/salesforcecli/command/commit/7f4ff785e33a693a684dcd10539130917e907233))
+* publish ([de12319](https://github.com/salesforcecli/command/commit/de12319bb41681eae625a35f8ed6b04ce01aa7e9))
+
 ## 4.0.0 (2021-07-08)
 
 
