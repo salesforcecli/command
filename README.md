@@ -21,14 +21,14 @@ To learn more about the features of the Command Library see the _[Salesforce CLI
 
 ## Contributing
 
-If you are interested in contributing, please take a look at the [CONTRIBUTING](https://github.com/forcedotcom/cli-packages/blob/develop/CONTRIBUTING.md) guide.
+If you are interested in contributing, please take a look at the [CONTRIBUTING](https://github.com/salesforcecli/command/blob/main/CONTRIBUTING.md) guide.
 
 ## Development
 
-If you are interested in building this package locally, please take a look at the [DEVELOPING](https://github.com/forcedotcom/cli-packages/blob/develop/DEVELOPING.md) doc.
+If you are interested in building this package locally, please take a look at the [DEVELOPING](https://github.com/salesforcecli/command/blob/main/DEVELOPING.md) doc.
 
 ## Related Docs and Repositories
 
-- [@salesforce/command](https://github.com/forcedotcom/cli-packages/tree/master/packages/command) - Contains the base Salesforce CLI command, `SfdxCommand`.
+- [@salesforce/command](https://github.com/salesforcecli/command) - Contains the base Salesforce CLI command, `SfdxCommand`.
 - [@oclif/command](https://github.com/oclif/command) - Contains the base oclif `Command`, which `SfdxCommand` extends.
 - [@salesforce/plugin-generator](https://github.com/forcedotcom/sfdx-plugin-generate) - The generator plug-in for building plug-ins for Salesforce CLI.
