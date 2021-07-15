@@ -3,7 +3,7 @@
   "version": "4.0.4",
   "description": "Salesforce CLI base command class",
   "main": "lib/exported",
-  "repository": "https://github.com/salesforcecli/command",
+  "repository": "salesforcecli/command",
   "license": "BSD-3-Clause",
   "scripts": {
     "build": "sf-build",
@@ -53,7 +53,7 @@
   "devDependencies": {
     "@oclif/config": "^1.15.1",
     "@salesforce/dev-config": "^2.0.0",
-    "@salesforce/dev-scripts": "^0.6.2",
+    "@salesforce/dev-scripts": "^0.9.18",
     "@salesforce/prettier-config": "^0.0.1",
     "@salesforce/ts-sinon": "^1.1.0",
     "@typescript-eslint/eslint-plugin": "^2.30.0",
