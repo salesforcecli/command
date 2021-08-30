@@ -13,7 +13,7 @@ export interface SfCommandInterface extends Interfaces.Command {
 }
 
 /**
- * A base command that provides convenient access to CLI help 
+ * A base command that provides convenient access to CLI help
  * output formatting. Extend this command and set specific properties
  * to add help sections to the command's help output.
  *

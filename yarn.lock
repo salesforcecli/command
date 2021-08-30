@@ -444,10 +444,10 @@
     is-wsl "^2.1.1"
     tslib "^2.0.0"
 
-"@oclif/core@^0.5.32":
-  version "0.5.32"
-  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-0.5.32.tgz#9ca91b07ba0238131e4b05a78075a0505f509034"
-  integrity sha512-ZRGh/9IccLT/iyJ9FiTK2KdqPmxewkCkdFXkNhTVgtzQXI3ZFhDba3pFjxfI+nbhbrVRLfGzTnHXV6c4rka6pw==
+"@oclif/core@^0.5.34":
+  version "0.5.34"
+  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-0.5.34.tgz#d8cadcd609929560e6cc836c45d94bc99379e1f6"
+  integrity sha512-laLrm2tvIOr6uboDMVdAbBJMeAAgV0otkoF8imdyhYCsNcmXFyV3x0kwNGbEUYG945CQ0V00u7MS7tmlwdZlGw==
   dependencies:
     "@oclif/linewrap" "^1.0.0"
     chalk "^4.1.0"

@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@oclif/command": "^1.5.17",
-    "@oclif/core": "^0.5.32",
+    "@oclif/core": "^0.5.34",
     "@oclif/errors": "^1.2.2",
     "@oclif/parser": "^3.8.3",
     "@oclif/plugin-help": "^2.2.0",
