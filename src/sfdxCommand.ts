@@ -580,5 +580,5 @@ export abstract class SfdxCommand extends Command {
    * be wrapped in an SfdxError. If the error contains exitCode field, process.exitCode
    * will set to it.
    */
-  public abstract async run(): Promise<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  public abstract run(): Promise<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
