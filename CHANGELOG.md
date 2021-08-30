@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.0.5](https://github.com/salesforcecli/command/compare/v4.0.4...v4.0.5) (2021-08-30)
+
+
+### Bug Fixes
+
+* create sf command class ([275b6cf](https://github.com/salesforcecli/command/commit/275b6cf2b098dd103bf02b201813f177eb6783f4))
+
 ### [4.0.4](https://github.com/salesforcecli/command/compare/v4.0.3...v4.0.4) (2021-07-08)
 
 
