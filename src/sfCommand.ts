@@ -13,9 +13,9 @@ export interface SfCommandInterface extends Interfaces.Command {
 }
 
 /**
- * A base command that provides convenient access to common SFDX flags, a logger,
- * CLI output formatting, scratch orgs, and devhubs.  Extend this command and set
- * various static properties and a flag configuration to add SFDX behavior.
+ * A base command that provides convenient access to CLI help 
+ * output formatting. Extend this command and set specific properties
+ * to add help sections to the command's help output.
  *
  * @extends @oclif/command
  * @see https://github.com/oclif/command
