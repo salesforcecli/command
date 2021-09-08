@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.1.0](https://github.com/salesforcecli/command/compare/v4.0.5...v4.1.0) (2021-09-08)
+
+
+### Features
+
+* add json formatter to SfCommand ([7810f0e](https://github.com/salesforcecli/command/commit/7810f0eed90c3838708ff112dea181decffb7d20))
+
+
+### Bug Fixes
+
+* default to exitcode 0 on success ([f627e70](https://github.com/salesforcecli/command/commit/f627e70b4f90cc649756930e8c992e517c757eb6))
+* Merge pull request [#13](https://github.com/salesforcecli/command/issues/13) from salesforcecli/phale/W-9791511 ([6a312e9](https://github.com/salesforcecli/command/commit/6a312e9d189cbff463bb1c88a8edd627ae6e8beb))
+
 ### [4.0.5](https://github.com/salesforcecli/command/compare/v4.0.4...v4.0.5) (2021-08-30)
 
 
