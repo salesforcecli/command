@@ -21,8 +21,42 @@ export interface SfCommandInterface extends Interfaces.Command {
  * @see https://github.com/oclif/command
  */
 
-export abstract class SfCommand extends Command {
+export abstract class SfCommand<T> extends Command {
   public static configurationVariablesSection?: HelpSection;
   public static envVariablesSection?: HelpSection;
   public static errorCodes?: HelpSection;
+
+  protected toSuccessJson(result: T): SfCommand.Json<T> {
+    return {
+      status: process.exitCode ?? 0,
+      result,
+    };
+  }
+
+  protected toErrorJson(error: Error): SfCommand.Error {
+    return {
+      status: process.exitCode ?? 1,
+      stack: error.stack,
+      name: error.name,
+      message: error.message,
+    };
+  }
+
+  public abstract run(): Promise<T>;
+}
+
+export namespace SfCommand {
+  export interface Json<T> {
+    status: number;
+    result: T;
+    warnings?: string[];
+  }
+
+  export interface Error {
+    status: number;
+    name: string;
+    message: string;
+    stack: string | undefined;
+    warnings?: string[];
+  }
 }
