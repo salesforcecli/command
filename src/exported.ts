@@ -5,11 +5,8 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { Flags } from '@oclif/core';
 import { Result, SfdxCommand, SfdxResult } from './sfdxCommand';
 import { flags, FlagsConfig } from './sfdxFlags';
 import { TableOptions, UX } from './ux';
-import { SfCommand, SfCommandInterface } from './sfCommand';
 
 export { Result, SfdxCommand, SfdxResult, FlagsConfig, flags, TableOptions, UX };
-export { SfCommand, SfCommandInterface, Flags };
