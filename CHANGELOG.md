@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.1.2](https://github.com/salesforcecli/command/compare/v4.1.1...v4.1.2) (2021-09-15)
+
+
+### Bug Fixes
+
+* backout sf command ([a405845](https://github.com/salesforcecli/command/commit/a4058452a9a8cd86b7dab790bfc476c8058bc8fb))
+
 ### [4.1.1](https://github.com/salesforcecli/command/compare/v4.1.0...v4.1.1) (2021-09-10)
 
 
