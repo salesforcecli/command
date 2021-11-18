@@ -142,6 +142,9 @@ describe('SfdxFlags', () => {
         buildSfdxFlags({ foo: flags.builtin() }, {});
         fail('referencing an unknown builtin flag should have failed.');
       } catch (e) {
+        if (!(e instanceof Error)) {
+          fail('error with no name');
+        }
         expect(e.name).to.equal('UnknownBuiltinFlagType');
       }
     });

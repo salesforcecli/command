@@ -40,6 +40,10 @@ const messages: Messages = Messages.loadMessages('@salesforce/command', 'flags')
 
 const $$ = testSetup();
 
+const hasErrorProperties = (obj: unknown): obj is { code: string; oclif: { exit: number } } => {
+  const errorMaybe = obj as { code: string; oclif: { exit: number } };
+  return typeof errorMaybe.code === 'string' && errorMaybe.oclif && typeof errorMaybe.oclif.exit === 'number';
+};
 interface TestCommandMeta {
   cmd: typeof SfdxCommand; // the command constructor props
   cmdInstance: SfdxCommand; // the command instance props
@@ -111,7 +115,7 @@ async function mockStdout(test: (outLines: string[]) => Promise<void>) {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore TODO: why isn't `create` invokable?!
   process.stdout.write = (message) => {
-    if (message) {
+    if (message && typeof message === 'string') {
       lines.push(message);
     }
   };
@@ -438,6 +442,9 @@ describe('SfdxCommand', () => {
         output = await TestCommand.run(['-h']);
         fail('Expected EEXIT error');
       } catch (err) {
+        if (!hasErrorProperties(err)) {
+          fail('Invalid error');
+        }
         expect(err.code).to.equal('EEXIT');
         expect(err.oclif.exit).to.equal(0);
       }
@@ -468,6 +475,9 @@ describe('SfdxCommand', () => {
         output = await TestCommand.run(['-h']);
         fail('Expected EEXIT error');
       } catch (err) {
+        if (!hasErrorProperties(err)) {
+          fail('Invalid error');
+        }
         expect(err.code).to.equal('EEXIT');
         expect(err.oclif.exit).to.equal(0);
       }
