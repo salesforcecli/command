@@ -4,11 +4,12 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+
+// would be willing to change this, but don't want to change types on public methods (object => Record<string, undefined>))
 /* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable no-console */
 import { env } from '@salesforce/kit';
 import { ensure } from '@salesforce/ts-types';
-
-/* eslint-disable no-console */
 
 /**
  * A table option configuration type that can be the TableOptions as defined by
