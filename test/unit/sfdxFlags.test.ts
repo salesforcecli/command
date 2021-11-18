@@ -58,7 +58,7 @@ describe('SfdxFlags', () => {
     it('should carry forward additional properties on builtins when forced (for legacy toolbelt compatibility)', () => {
       const rv = buildSfdxFlags(
         {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore force setting the char to simulate a legacy toolbelt use case
           apiversion: flags.builtin({ char: 'a' }),
         },
@@ -142,6 +142,9 @@ describe('SfdxFlags', () => {
         buildSfdxFlags({ foo: flags.builtin() }, {});
         fail('referencing an unknown builtin flag should have failed.');
       } catch (e) {
+        if (!(e instanceof Error)) {
+          fail('error with no name');
+        }
         expect(e.name).to.equal('UnknownBuiltinFlagType');
       }
     });

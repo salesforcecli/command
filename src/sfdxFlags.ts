@@ -58,9 +58,9 @@ function merge<T>(
 function merge<T>(kind: flags.Kind, flag: IFlag<T>, describable: flags.Describable): flags.Discriminated<flags.Any<T>> {
   if (has(flag, 'validate') && hasFunction(flag, 'parse')) {
     const parse = flag.parse.bind(flag);
-    flag.parse = <T>(val: string, ctx: unknown): T => {
+    flag.parse = <T2>(val: string, ctx: unknown): T2 => {
       validateValue(toValidatorFn(flag.validate)(val), val, kind);
-      return parse(val, ctx) as T;
+      return parse(val, ctx) as T2;
     };
   }
 
@@ -648,6 +648,7 @@ function validateCustomFlag<T>(key: string, flag: flags.Any<T>): flags.Any<T> {
   return flag;
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 function isBuiltin(flag: object): flag is flags.Builtin {
   return hasString(flag, 'type') && flag.type === 'builtin';
 }

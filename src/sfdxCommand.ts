@@ -145,7 +145,7 @@ export abstract class SfdxCommand extends Command {
   protected flags!: OutputFlags<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   // The parsed args for easy reference by this command; assigned in init
-  protected args!: OutputArgs<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  protected args!: OutputArgs;
 
   // The parsed varargs for easy reference by this command
   protected varargs?: JsonMap;
@@ -176,7 +176,7 @@ export abstract class SfdxCommand extends Command {
       await this.init();
       return (this.result.data = await this.run());
     } catch (e) {
-      err = e;
+      err = e as Error;
       await this.catch(e);
     } finally {
       await this.finally(err);
@@ -190,7 +190,7 @@ export abstract class SfdxCommand extends Command {
     try {
       this.project = await SfdxProject.resolve();
     } catch (err) {
-      if (err.name === 'InvalidProjectWorkspace') {
+      if (err instanceof Error && err.name === 'InvalidProjectWorkspace') {
         throw SfdxError.create('@salesforce/command', 'command', 'RequiresProjectError');
       }
       throw err;
@@ -210,7 +210,7 @@ export abstract class SfdxCommand extends Command {
       }
     } catch (err) {
       if (this.statics.requiresUsername) {
-        if (err.name === 'NoUsername' || err.name === 'AuthInfoCreationError') {
+        if (err instanceof Error && (err.name === 'NoUsername' || err.name === 'AuthInfoCreationError')) {
           throw SfdxError.create('@salesforce/command', 'command', 'RequiresUsernameError');
         }
         throw err;
@@ -233,7 +233,7 @@ export abstract class SfdxCommand extends Command {
     } catch (err) {
       // Throw an error if the command requires a devhub and there is no targetdevhubusername
       // flag set and no defaultdevhubusername set.
-      if (this.statics.requiresDevhubUsername) {
+      if (this.statics.requiresDevhubUsername && err instanceof Error) {
         if (err.name === 'AuthInfoCreationError' || err.name === 'NoUsername') {
           throw SfdxError.create('@salesforce/command', 'command', 'RequiresDevhubUsernameError');
         }
@@ -394,7 +394,7 @@ export abstract class SfdxCommand extends Command {
     }
     // Emit an event for the analytics plugin.  The ts-ignore is necessary
     // because TS is strict about the events that can be emitted on process.
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     process.emit('cmdError', err, Object.assign({}, this.flags, this.varargs), this.org || this.hubOrg);
   }
