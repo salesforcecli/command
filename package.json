@@ -51,7 +51,7 @@
     "cli-ux": "^4.9.3"
   },
   "devDependencies": {
-    "@oclif/config": "^1.15.1",
+    "@oclif/config": "^1.17.1",
     "@salesforce/dev-config": "^2.0.0",
     "@salesforce/dev-scripts": "^0.9.18",
     "@salesforce/prettier-config": "^0.0.2",

@@ -1,11 +1,7 @@
 {
   "extends": "./node_modules/@salesforce/dev-config/tsconfig-strict",
   "compilerOptions": {
-    "outDir": "./lib",
-    "baseUrl": ".",
-    "paths": {
-      "@oclif/parser": ["./node_modules/@oclif/parser"]
-    }
+    "outDir": "./lib"
   },
   "include": ["src/**/*.ts"]
 }
