@@ -648,7 +648,8 @@ function validateCustomFlag<T>(key: string, flag: flags.Any<T>): flags.Any<T> {
   return flag;
 }
 
-function isBuiltin(flag: Record<string, unknown>): flag is flags.Builtin {
+// eslint-disable-next-line @typescript-eslint/ban-types
+function isBuiltin(flag: object): flag is flags.Builtin {
   return hasString(flag, 'type') && flag.type === 'builtin';
 }
 

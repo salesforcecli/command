@@ -113,7 +113,7 @@ async function mockStdout(test: (outLines: string[]) => Promise<void>) {
   const oldStdoutWriter = process.stdout.write.bind(process.stdout);
   const lines: string[] = [];
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore TODO: why isn't `create` invokable?!
+  // @ts-ignore
   process.stdout.write = (message) => {
     if (message && typeof message === 'string') {
       lines.push(message);
@@ -1127,7 +1127,7 @@ describe('SfdxCommand', () => {
       class TestCommand extends BaseTestCommand {
         public static flagsConfig = {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore TODO: why isn't `create` invokable?!
+          // @ts-ignore
           doflag: create({ char: 'i', description: 'my desc' }),
         };
       }
