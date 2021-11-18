@@ -145,7 +145,7 @@ export abstract class SfdxCommand extends Command {
   protected flags!: OutputFlags<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   // The parsed args for easy reference by this command; assigned in init
-  protected args!: OutputArgs<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  protected args!: OutputArgs;
 
   // The parsed varargs for easy reference by this command
   protected varargs?: JsonMap;
