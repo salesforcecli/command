@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.1.5](https://github.com/salesforcecli/command/compare/v4.1.4...v4.1.5) (2021-11-18)
+
+
+### Bug Fixes
+
+* manual verson bump ([9de1622](https://github.com/salesforcecli/command/commit/9de162222a678c329956d746512ad72a85c2ac15))
+* outputArgs wasn't generic ([87627fd](https://github.com/salesforcecli/command/commit/87627fd9a498b07bdcd95ce130ba7c13235a387b))
+* resolve parser from top-level ([7342c92](https://github.com/salesforcecli/command/commit/7342c92497b4a06399ff84acec52bd2d87f7cf8e))
+* ts errors and changd eslint comment rule name ([8c021c2](https://github.com/salesforcecli/command/commit/8c021c2fab0a8658f2cc485a6ccf67afcd3cce8c))
+
 ### [4.1.4](https://github.com/salesforcecli/command/compare/v4.1.3...v4.1.4) (2021-10-12)
 
 ### [4.1.3](https://github.com/salesforcecli/command/compare/v4.1.2...v4.1.3) (2021-10-05)
