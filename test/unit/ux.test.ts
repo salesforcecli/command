@@ -97,9 +97,9 @@ describe('UX', () => {
   });
 
   it('logJson() should log to the logger (unformatted) and stdout (formatted)', () => {
-    let retVal: Optional<object>;
+    let retVal: Optional<Record<string, unknown>>;
     const info = $$.SANDBOX.stub($$.TEST_LOGGER, 'info');
-    const styledJsonGetter = () => (x: object) => (retVal = x);
+    const styledJsonGetter = () => (x: Record<string, unknown>) => (retVal = x);
     $$.SANDBOX.stub(cli, 'styledJSON').get(styledJsonGetter);
     const ux = new UX($$.TEST_LOGGER, true, cli);
     const logMsg = { key1: 'foo', key2: 9, key3: true, key4: [1, 2, 3] };
@@ -269,9 +269,9 @@ describe('UX', () => {
   });
 
   it('table() should only log to the logger when output IS NOT enabled', () => {
-    let retVal: Optional<object>;
+    let retVal: Optional<Record<string, unknown>>;
     const info = $$.SANDBOX.stub($$.TEST_LOGGER, 'info');
-    const tableGetter = () => (x: object) => (retVal = x);
+    const tableGetter = () => (x: Record<string, unknown>) => (retVal = x);
     $$.SANDBOX.stub(cli, 'table').get(tableGetter);
     const ux = new UX($$.TEST_LOGGER, false, cli);
     const tableData = [
@@ -364,7 +364,7 @@ describe('UX', () => {
     const question = 'City?';
     const answer = 'Louisville';
     const ux = new UX($$.TEST_LOGGER, true, cli);
-    const promptGetter = () => (name: string, options: object) => {
+    const promptGetter = () => (name: string, options: Record<string, unknown>) => {
       expect(name).to.equal(question);
       expect(options).to.eql({});
       return answer;

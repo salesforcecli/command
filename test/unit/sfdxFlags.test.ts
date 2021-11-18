@@ -58,7 +58,7 @@ describe('SfdxFlags', () => {
     it('should carry forward additional properties on builtins when forced (for legacy toolbelt compatibility)', () => {
       const rv = buildSfdxFlags(
         {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore force setting the char to simulate a legacy toolbelt use case
           apiversion: flags.builtin({ char: 'a' }),
         },

@@ -108,8 +108,8 @@ let jsonToStdout: boolean;
 async function mockStdout(test: (outLines: string[]) => Promise<void>) {
   const oldStdoutWriter = process.stdout.write.bind(process.stdout);
   const lines: string[] = [];
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore TODO: why isn't `create` invokable?!
   process.stdout.write = (message) => {
     if (message) {
       lines.push(message);
@@ -1116,7 +1116,7 @@ describe('SfdxCommand', () => {
       const create = flags[flagType];
       class TestCommand extends BaseTestCommand {
         public static flagsConfig = {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore TODO: why isn't `create` invokable?!
           doflag: create({ char: 'i', description: 'my desc' }),
         };
@@ -1125,6 +1125,8 @@ describe('SfdxCommand', () => {
       if (err) {
         const sfdxError = SfdxError.create('@salesforce/command', 'flags', 'InvalidFlagTypeError', [
           val,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore kind doesn't exist
           TestCommand.flagsConfig.doflag.kind,
           ERR_NEXT_STEPS[flagType] || '',
         ]);
@@ -1221,7 +1223,7 @@ describe('SfdxCommand', () => {
       TestCommand.flagsConfig = {
         myflag: flags.string({
           char: 'm',
-          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore ignore invalid longDescription value
           longDescription: false,
           description: 'my desc',
@@ -1235,7 +1237,7 @@ describe('SfdxCommand', () => {
     it('should validate description is defined', async () => {
       class TestCommand extends BaseTestCommand {}
       TestCommand.flagsConfig = {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore ignore error about not providing description
         myflag: flags.string({ char: 'm' }),
       };
@@ -1247,7 +1249,7 @@ describe('SfdxCommand', () => {
       class TestCommand extends BaseTestCommand {}
       TestCommand.flagsConfig = {
         myflag: flags.string({
-          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore ignore invalid char value length
           char: 'foo',
           description: 'bar',
@@ -1260,7 +1262,7 @@ describe('SfdxCommand', () => {
     it('should validate char is alphabetical', async () => {
       class TestCommand extends BaseTestCommand {}
       TestCommand.flagsConfig = {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore ignore invalid char value
         myflag: flags.string({ char: '5', description: 'bar' }),
       };
@@ -1301,7 +1303,7 @@ describe('SfdxCommand', () => {
         }),
       };
 
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore Allow undefined array value against the compiler spec to test underlying engine
       const output = await TestCommand.run(['--myflag', undefined]);
       expect(output).to.equal(undefined);
