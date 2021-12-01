@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.2.0](https://github.com/salesforcecli/command/compare/v4.1.5...v4.2.0) (2021-12-01)
+
+
+### Features
+
+* bump core version ([d7c0bf2](https://github.com/salesforcecli/command/commit/d7c0bf2f6ba559638e5ce0917e553e1c4068769a))
+
 ### [4.1.5](https://github.com/salesforcecli/command/compare/v4.1.4...v4.1.5) (2021-11-18)
 
 
