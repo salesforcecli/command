@@ -39,11 +39,11 @@
     }
   },
   "dependencies": {
-    "@oclif/command": "^1.8.1",
+    "@oclif/command": "^1.8.7",
     "@oclif/errors": "^1.2.2",
     "@oclif/parser": "3.8.6",
-    "@oclif/plugin-help": "^2.2.0",
-    "@oclif/test": "^1.2.4",
+    "@oclif/plugin-help": "^3.2.10",
+    "@oclif/test": "^1.2.8",
     "@salesforce/core": "^2.31.0",
     "@salesforce/kit": "^1.5.17",
     "@salesforce/ts-types": "^1.5.20",
@@ -52,7 +52,7 @@
   },
   "devDependencies": {
     "@oclif/config": "^1.17.1",
-    "@salesforce/dev-config": "^2.0.0",
+    "@salesforce/dev-config": "^2.1.2",
     "@salesforce/dev-scripts": "^0.9.18",
     "@salesforce/prettier-config": "^0.0.2",
     "@salesforce/ts-sinon": "^1.1.0",
