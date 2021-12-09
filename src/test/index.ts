@@ -23,6 +23,7 @@ import {
 // Need to prevent typescript error
 import * as IConfig from '@oclif/config/lib/config';
 import { loadConfig } from '@oclif/test/lib/load-config';
+import { SinonStub } from 'sinon';
 
 loadConfig.root = ensure(module.parent).filename;
 
@@ -111,6 +112,12 @@ const withConnectionRequest = (
 const withProject = (sfdxProjectJson?: JsonMap): Plugin<unknown> => {
   return {
     run(): void {
+      // Restore first if already stubbed by $$.inProject()
+      /* eslint-disable-next-line @typescript-eslint/unbound-method */
+      const projPathStub = SfdxProject.resolveProjectPath as SinonStub;
+      if (projPathStub.restore) {
+        projPathStub.restore();
+      }
       $$.SANDBOX.stub(SfdxProject, 'resolveProjectPath').callsFake((path: string | undefined) => {
         return $$.localPathRetriever(path || $$.id);
       });
