@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/command",
-  "version": "4.2.1",
+  "version": "4.2.2",
   "description": "Salesforce CLI base command class",
   "main": "lib/exported",
   "repository": "salesforcecli/command",
@@ -44,7 +44,7 @@
     "@oclif/parser": "3.8.6",
     "@oclif/plugin-help": "^2.2.0",
     "@oclif/test": "^1.2.4",
-    "@salesforce/core": "^2.31.0",
+    "@salesforce/core": "^2.35.0",
     "@salesforce/kit": "^1.5.17",
     "@salesforce/ts-types": "^1.5.20",
     "chalk": "^2.4.2",
