@@ -68,10 +68,16 @@ export class Result implements SfdxResult {
  * Defines a varargs configuration. If set to true, there will be no
  * validation and varargs will not be required.  The validator function
  * should throw an error if validation fails.
+ *
+ * Should allow keys to be repeated. Values for repeated keys will either be
+ * presented in a concatenated string or as an array.
  */
 export type VarargsConfig =
   | {
       required: boolean;
+      allowMultipleKeys?: boolean;
+      multipleValuesAsArray?: boolean;
+      delimiter?: string;
       validator?: (name: string, value: string) => void;
     }
   | boolean;
@@ -458,7 +464,7 @@ export abstract class SfdxCommand extends Command {
   }
 
   protected parseVarargs(args: string[] = []): JsonMap {
-    const varargs: Dictionary<string> = {};
+    const varargs: Dictionary<string | string[]> = {};
     const descriptor = this.statics.varargs;
 
     // If this command requires varargs, throw if none are provided.
@@ -466,6 +472,7 @@ export abstract class SfdxCommand extends Command {
       throw SfdxError.create('@salesforce/command', 'command', 'VarargsRequired');
     }
 
+    const allowsMultipleKeys = false || (!isBoolean(descriptor) && descriptor.allowMultipleKeys);
     // Validate the format of the varargs
     args.forEach((arg) => {
       const split = arg.split('=');
@@ -476,7 +483,7 @@ export abstract class SfdxCommand extends Command {
 
       const [name, value] = split;
 
-      if (varargs[name]) {
+      if (varargs[name] && !allowsMultipleKeys) {
         throw SfdxError.create('@salesforce/command', 'command', 'DuplicateVararg', [name]);
       }
 
@@ -484,7 +491,7 @@ export abstract class SfdxCommand extends Command {
         descriptor.validator(name, value);
       }
 
-      varargs[name] = value || undefined;
+      this.postToVarags(varargs, name, value);
     });
 
     return varargs;
@@ -555,6 +562,28 @@ export abstract class SfdxCommand extends Command {
         await this.config.runHook(eventName, Object.assign(options, { result }));
       });
     });
+  }
+  private postToVarags(varargs: Dictionary<string | string[]>, name: string, value: string): void {
+    const descriptor = this.statics.varargs;
+    const multipleValuesAsArray = false || (!isBoolean(descriptor) && descriptor.multipleValuesAsArray);
+    const delimiter = !isBoolean(descriptor) && descriptor.delimiter ? descriptor.delimiter : ',';
+    if (!value) {
+      varargs[name] = undefined;
+    }
+
+    // check to see if name already exists in Dictionary
+    if (varargs[name]) {
+      let storedValue = varargs[name];
+      if (multipleValuesAsArray) {
+        storedValue = (typeof storedValue === 'string' ? [storedValue] : storedValue) as string[];
+        storedValue.push(value);
+        varargs[name] = storedValue;
+      } else {
+        varargs[name] = `${varargs[name]}${delimiter}${value}`;
+      }
+    } else {
+      varargs[name] = value;
+    }
   }
 
   // Overrides @oclif/command static flags property.  Adds username flags

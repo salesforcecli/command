@@ -25,7 +25,16 @@ import {
 import { testSetup } from '@salesforce/core/lib/testSetup';
 import { cloneJson, Duration, env, isEmpty } from '@salesforce/kit';
 import { stubInterface } from '@salesforce/ts-sinon';
-import { AnyJson, Dictionary, ensureJsonMap, JsonArray, JsonMap, keysOf, Optional } from '@salesforce/ts-types';
+import {
+  AnyJson,
+  Dictionary,
+  ensureJsonMap,
+  isArray,
+  JsonArray,
+  JsonMap,
+  keysOf,
+  Optional,
+} from '@salesforce/ts-types';
 import { expect } from 'chai';
 import chalk from 'chalk';
 import { SinonStub } from 'sinon';
@@ -47,6 +56,7 @@ const hasErrorProperties = (obj: unknown): obj is { code: string; oclif: { exit:
 interface TestCommandMeta {
   cmd: typeof SfdxCommand; // the command constructor props
   cmdInstance: SfdxCommand; // the command instance props
+  varargs: JsonMap | undefined;
 }
 // An object to keep track of what is set on the test command constructor and instance by SfdxCommand
 let testCommandMeta: TestCommandMeta;
@@ -67,6 +77,7 @@ class BaseTestCommand extends SfdxCommand {
     testCommandMeta = {
       cmdInstance: this,
       cmd: this.statics,
+      varargs: this.varargs,
     };
     return this.statics.output;
   }
@@ -1101,6 +1112,40 @@ describe('SfdxCommand', () => {
       verifyUXOutput({
         error: [['ERROR running TestCommand: ', "Cannot set variable name 'foo' twice for the same command."]],
       });
+    });
+
+    it('should aggregate multiple keys into an array', async () => {
+      class TestCommand extends BaseTestCommand {}
+      TestCommand['varargs'] = { allowMultipleKeys: true, multipleValuesAsArray: true, required: false, validator };
+      await TestCommand.run(['-f', 'blah', "foo='bar 1'", 'biz=baz', "foo='that 2'"]);
+      const varargs = testCommandMeta.varargs as { foo: string[]; biz: string };
+      expect(process.exitCode).to.equal(0);
+      expect(varargs).to.be.ok;
+      expect(isArray(varargs.foo)).to.be.true;
+      expect(varargs.foo).to.have.length(2);
+      expect(varargs.foo[0]).to.equal("'bar 1'");
+      expect(varargs.foo[1]).to.equal("'that 2'");
+      expect(varargs.biz).to.be.equal('baz');
+    });
+
+    it('should aggregate multiple keys into a single string', async () => {
+      class TestCommand extends BaseTestCommand {}
+      TestCommand['varargs'] = {
+        allowMultipleKeys: true,
+        multipleValuesAsArray: false,
+        delimiter: '||',
+        required: false,
+        validator,
+      };
+      await TestCommand.run(['-f', 'blah', "foo='bar 1'", 'biz=baz', "foo='that 2'"]);
+      const varargs = testCommandMeta.varargs as { foo: string[]; biz: string };
+      expect(process.exitCode).to.equal(0);
+      expect(varargs).to.be.ok;
+      expect(typeof varargs.foo).to.be.equal('string');
+      expect(varargs.foo).to.include("'bar 1'");
+      expect(varargs.foo).to.include('||');
+      expect(varargs.foo).to.include("'that 2'");
+      expect(varargs.biz).to.be.equal('baz');
     });
 
     it('should throw when varargs do not pass validation', async () => {
