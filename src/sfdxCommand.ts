@@ -473,6 +473,7 @@ export abstract class SfdxCommand extends Command {
     }
 
     const allowsMultipleKeys = false || (!isBoolean(descriptor) && descriptor.allowMultipleKeys);
+
     // Validate the format of the varargs
     args.forEach((arg) => {
       const split = arg.split('=');
@@ -567,22 +568,20 @@ export abstract class SfdxCommand extends Command {
     const descriptor = this.statics.varargs;
     const multipleValuesAsArray = false || (!isBoolean(descriptor) && descriptor.multipleValuesAsArray);
     const delimiter = !isBoolean(descriptor) && descriptor.delimiter ? descriptor.delimiter : ',';
-    if (!value) {
-      varargs[name] = undefined;
-    }
+    const normalizedValue = value || undefined;
 
     // check to see if name already exists in Dictionary
-    if (varargs[name]) {
+    if (Reflect.has(varargs, name)) {
       let storedValue = varargs[name];
       if (multipleValuesAsArray) {
-        storedValue = (typeof storedValue === 'string' ? [storedValue] : storedValue) as string[];
-        storedValue.push(value);
+        storedValue = (!storedValue || typeof storedValue === 'string' ? [storedValue] : storedValue) as string[];
+        storedValue.push(normalizedValue as string);
         varargs[name] = storedValue;
       } else {
-        varargs[name] = `${varargs[name]}${delimiter}${value}`;
+        varargs[name] = `${varargs[name]}${delimiter}${normalizedValue}`;
       }
     } else {
-      varargs[name] = value;
+      varargs[name] = normalizedValue;
     }
   }
 

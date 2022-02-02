@@ -1148,6 +1148,53 @@ describe('SfdxCommand', () => {
       expect(varargs.biz).to.be.equal('baz');
     });
 
+    it('should transform falsy value into "undefined"', async () => {
+      class TestCommand extends BaseTestCommand {}
+      TestCommand['varargs'] = {
+        allowMultipleKeys: false,
+        multipleValuesAsArray: false,
+        delimiter: '||',
+        required: false,
+      };
+      await TestCommand.run(['-f', 'blah', 'foo=']);
+      const varargs = testCommandMeta.varargs as { foo: string[]; biz: string };
+      expect(process.exitCode).to.equal(0);
+      expect(varargs).to.be.ok;
+      expect(varargs.foo).to.be.equal(undefined);
+    });
+
+    it('should transform falsy value into "undefined" into single string for duplicate keys', async () => {
+      class TestCommand extends BaseTestCommand {}
+      TestCommand['varargs'] = {
+        allowMultipleKeys: true,
+        multipleValuesAsArray: false,
+        delimiter: '||',
+        required: false,
+      };
+      await TestCommand.run(['-f', 'blah', 'foo=', 'foo=bar']);
+      const varargs = testCommandMeta.varargs as { foo: string[]; biz: string };
+      expect(process.exitCode).to.equal(0);
+      expect(varargs).to.be.ok;
+      expect(varargs.foo).to.include('undefined');
+    });
+
+    it('should transform falsy value into "undefined" into array for duplicate keys', async () => {
+      class TestCommand extends BaseTestCommand {}
+      TestCommand['varargs'] = {
+        allowMultipleKeys: true,
+        multipleValuesAsArray: true,
+        delimiter: '||',
+        required: false,
+      };
+      await TestCommand.run(['-f', 'blah', 'foo=', 'foo=bar']);
+      const varargs = testCommandMeta.varargs as { foo: string[]; biz: string };
+      expect(process.exitCode).to.equal(0);
+      expect(isArray(varargs.foo)).to.be.true;
+      expect(varargs.foo).to.have.length(2);
+      expect(varargs.foo[0]).to.equal(undefined);
+      expect(varargs.foo[1]).to.equal('bar');
+    });
+
     it('should throw when varargs do not pass validation', async () => {
       class TestCommand extends BaseTestCommand {}
       TestCommand['varargs'] = { required: false, validator };
