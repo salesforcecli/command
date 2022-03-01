@@ -41,7 +41,7 @@
   "dependencies": {
     "@oclif/command": "^1.8.1",
     "@oclif/errors": "^1.2.2",
-    "@oclif/parser": "3.8.6",
+    "@oclif/parser": "3.8.7",
     "@oclif/plugin-help": "^2.2.0",
     "@oclif/test": "^1.2.4",
     "@salesforce/core": "^2.35.0",
