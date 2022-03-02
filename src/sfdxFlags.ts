@@ -9,7 +9,7 @@ import { URL } from 'url';
 import { flags as OclifFlags } from '@oclif/command';
 import * as Parser from '@oclif/parser';
 import { EnumFlagOptions, IBooleanFlag, IFlag, IOptionFlag } from '@oclif/parser/lib/flags';
-import { Logger, LoggerLevel, Messages, sfdc, SfdxError } from '@salesforce/core';
+import { Logger, LoggerLevel, Messages, sfdc, SfError } from '@salesforce/core';
 import { Duration, toNumber } from '@salesforce/kit';
 import {
   definiteEntriesOf,
@@ -29,11 +29,41 @@ import { Dictionary } from '@salesforce/ts-types';
 import { Deprecation } from './ux';
 
 Messages.importMessagesDirectory(__dirname);
-const messages: Messages = Messages.loadMessages('@salesforce/command', 'flags');
+const messages = Messages.load('@salesforce/command', 'flags', [
+  'UnknownBuiltinFlagType',
+  'FormattingMessageArrayValue',
+  'FormattingMessageArrayOption',
+  'FormattingMessageDate',
+  'FormattingMessageId',
+  'FormattingMessageUrl',
+  'InvalidFlagTypeError',
+  'jsonFlagLongDescription',
+  'jsonFlagDescription',
+  'InvalidLoggerLevelError',
+  'InvalidApiVersionError',
+  'apiversionFlagDescription',
+  'apiversionFlagLongDescription',
+  'conciseFlagDescription',
+  'conciseFlagLongDescription',
+  'loglevelFlagDescription',
+  'loglevelFlagLongDescription',
+  'quietFlagDescription',
+  'quietFlagLongDescription',
+  'targetdevhubusernameFlagDescription',
+  'targetdevhubusernameFlagLongDescription',
+  'targetusernameFlagDescription',
+  'targetusernameFlagLongDescription',
+  'verboseFlagDescription',
+  'verboseFlagLongDescription',
+  'InvalidFlagName',
+  'InvalidFlagChar',
+  'MissingOrInvalidFlagDescription',
+  'InvalidLongDescriptionFormat',
+]);
 
 function validateValue(isValid: boolean, value: string, kind: string, correct?: string): string {
   if (isValid) return value;
-  throw SfdxError.create('@salesforce/command', 'flags', 'InvalidFlagTypeError', [value, kind, correct || '']);
+  throw messages.createError('InvalidFlagTypeError', [value, kind, correct || '']);
 }
 
 function toValidatorFn(validator?: unknown): (val: string) => boolean {
@@ -145,13 +175,13 @@ function validateBounds<T>(
   extract: (t: T) => number
 ): number {
   if (bounds.min != null && value < extract(bounds.min)) {
-    throw new SfdxError(
+    throw new SfError(
       `Expected ${kind} greater than or equal to ${extract(bounds.min)} but received ${value}`,
       'InvalidFlagNumericBoundsError'
     );
   }
   if (bounds.max != null && value > extract(bounds.max)) {
-    throw new SfdxError(
+    throw new SfError(
       `Expected ${kind} less than or equal to ${extract(bounds.max)} but received ${value}`,
       'InvalidFlagNumericBoundsError'
     );
@@ -213,7 +243,7 @@ function validateArrayOptions<T>(kind: flags.Kind, raw: string, vals: T[], allow
 const convertArrayFlagToArray = (flagValue: string, delimiter = ','): string[] => {
   // don't split on delimiter if it's inside a single or double-quoted substring
   // eslint-disable-next-line no-useless-escape
-  const regex = new RegExp(`\"(.*?)\"|\'(.*?)\'|${delimiter}`);
+  const regex = new RegExp(`"(.*?)"|\'(.*?)\'|${delimiter}`);
   return flagValue
     .split(regex)
     .filter((i) => !!i)
@@ -336,7 +366,7 @@ function buildUrl(options: flags.Url): flags.Discriminated<flags.Url> {
       return new URL(val);
     } catch (err) {
       const correct = ` ${messages.getMessage('FormattingMessageUrl')}`;
-      throw SfdxError.create('@salesforce/command', 'flags', 'InvalidFlagTypeError', [val, 'url', correct || '']);
+      throw messages.createError('InvalidFlagTypeError', [val, 'url', correct || '']);
     }
   });
 }
@@ -485,7 +515,7 @@ export const requiredBuiltinFlags = {
       parse: (val: string) => {
         val = val.toLowerCase();
         if (Logger.LEVEL_NAMES.includes(val)) return val;
-        throw SfdxError.create('@salesforce/command', 'flags', 'InvalidLoggerLevelError', [val]);
+        throw messages.createError('InvalidLoggerLevelError', [val]);
       },
     });
   },
@@ -504,7 +534,7 @@ export const optionalBuiltinFlags = {
         longDescription: resolve(opts, 'longDescription', messages.getMessage('apiversionFlagLongDescription')),
         parse: (val: string) => {
           if (sfdc.validateApiVersion(val)) return val;
-          throw SfdxError.create('@salesforce/command', 'flags', 'InvalidApiVersionError', [val]);
+          throw messages.createError('InvalidApiVersionError', [val]);
         },
       })
     );
@@ -630,20 +660,20 @@ export type FlagsConfig = {
  *
  * @param {SfdxFlagDefinition} flag The flag configuration.
  * @param {string} key The flag name.
- * @throws SfdxError If the criteria is not meet.
+ * @throws SfError If the criteria is not meet.
  */
 function validateCustomFlag<T>(key: string, flag: flags.Any<T>): flags.Any<T> {
   if (!/^(?!(?:[-]|[0-9]*$))[a-z0-9-]+$/.test(key)) {
-    throw SfdxError.create('@salesforce/command', 'flags', 'InvalidFlagName', [key]);
+    throw messages.createError('InvalidFlagName', [key]);
   }
   if (flag.char && (flag.char.length !== 1 || !/[a-zA-Z]/.test(flag.char))) {
-    throw SfdxError.create('@salesforce/command', 'flags', 'InvalidFlagChar', [key]);
+    throw messages.createError('InvalidFlagChar', [key]);
   }
   if (!flag.description || !isString(flag.description)) {
-    throw SfdxError.create('@salesforce/command', 'flags', 'MissingOrInvalidFlagDescription', [key]);
+    throw messages.createError('MissingOrInvalidFlagDescription', [key]);
   }
   if (flag.longDescription !== undefined && !isString(flag.longDescription)) {
-    throw SfdxError.create('@salesforce/command', 'flags', 'InvalidLongDescriptionFormat', [key]);
+    throw messages.createError('InvalidLongDescriptionFormat', [key]);
   }
   return flag;
 }
@@ -683,7 +713,7 @@ export function buildSfdxFlags(
   definiteEntriesOf(flagsConfig).forEach(([key, flag]) => {
     if (isBuiltin(flag)) {
       if (!isKeyOf(optionalBuiltinFlags, key)) {
-        throw SfdxError.create('@salesforce/command', 'flags', 'UnknownBuiltinFlagType', [key]);
+        throw messages.createError('UnknownBuiltinFlagType', [key]);
       }
       output[key] = optionalBuiltinFlags[key](flag);
     } else {

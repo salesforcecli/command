@@ -19,8 +19,8 @@ import {
   Messages,
   Mode,
   Org,
-  SfdxError,
-  SfdxProject,
+  SfError,
+  SfProject,
 } from '@salesforce/core';
 import { testSetup } from '@salesforce/core/lib/testSetup';
 import { cloneJson, Duration, env, isEmpty } from '@salesforce/kit';
@@ -36,7 +36,7 @@ import { UX } from '../../src/ux';
 chalk.enabled = false;
 
 Messages.importMessagesDirectory(join(__dirname, '..'));
-const messages: Messages = Messages.loadMessages('@salesforce/command', 'flags');
+const messages = Messages.loadMessages('@salesforce/command', 'flags');
 
 const $$ = testSetup();
 
@@ -112,7 +112,6 @@ let jsonToStdout: boolean;
 async function mockStdout(test: (outLines: string[]) => Promise<void>) {
   const oldStdoutWriter = process.stdout.write.bind(process.stdout);
   const lines: string[] = [];
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   process.stdout.write = (message) => {
     if (message && typeof message === 'string') {
@@ -365,7 +364,7 @@ describe('SfdxCommand', () => {
   it('should add a project when requiresProject is true', async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fakeProject: any = 'fake_project';
-    $$.SANDBOX.stub(SfdxProject, 'resolve').withArgs().returns(fakeProject);
+    $$.SANDBOX.stub(SfProject, 'resolve').withArgs().returns(fakeProject);
     class TestCommand extends BaseTestCommand {}
     TestCommand['requiresProject'] = true;
 
@@ -825,7 +824,7 @@ describe('SfdxCommand', () => {
   });
 
   it('should throw when a project is required and the command is not run from within a project', async () => {
-    $$.SANDBOX.stub(SfdxProject, 'resolve').throws('InvalidProjectWorkspace');
+    $$.SANDBOX.stub(SfProject, 'resolve').throws('InvalidProjectWorkspace');
     class TestCommand extends BaseTestCommand {}
     TestCommand['requiresProject'] = true;
 
@@ -951,10 +950,10 @@ describe('SfdxCommand', () => {
   });
 
   it('should only output to ux.logJson when isJson is true and an error occurs', async () => {
-    const sfdxError = new SfdxError('err_msg', 'TestError', ['take action 1'], 100);
-    sfdxError.data = 'here is more data';
-    sfdxError.stack = 'here is the stack';
-    $$.SANDBOX.stub(Org, 'create').throws(sfdxError);
+    const sfError = new SfError('err_msg', 'TestError', ['take action 1'], 100);
+    sfError.data = 'here is more data';
+    sfError.stack = 'here is the stack';
+    $$.SANDBOX.stub(Org, 'create').throws(sfError);
     class TestCommand extends BaseTestCommand {}
     TestCommand['requiresUsername'] = true;
 
@@ -965,14 +964,15 @@ describe('SfdxCommand', () => {
     verifyUXOutput({
       logJson: [
         {
-          actions: sfdxError.actions,
+          actions: sfError.actions,
           commandName: 'TestCommand',
+          context: 'TestCommand',
           data: 'here is more data',
           exitCode: 100,
-          message: sfdxError.message,
-          name: sfdxError.name,
-          result: sfdxError.data,
-          stack: sfdxError.stack,
+          message: sfError.message,
+          name: sfError.name,
+          result: sfError.data,
+          stack: sfError.stack,
           status: 100,
           warnings: [],
         },
@@ -981,10 +981,10 @@ describe('SfdxCommand', () => {
   });
 
   it('should only output to ux.logJson when isJson is true and an error occurs with warning', async () => {
-    const sfdxError = new SfdxError('err_msg', 'TestError', ['take action 1'], 100);
-    sfdxError.data = 'here is more data';
-    sfdxError.stack = 'here is the stack';
-    $$.SANDBOX.stub(Org, 'create').throws(sfdxError);
+    const sfError = new SfError('err_msg', 'TestError', ['take action 1'], 100);
+    sfError.data = 'here is more data';
+    sfError.stack = 'here is the stack';
+    $$.SANDBOX.stub(Org, 'create').throws(sfError);
     class TestCommand extends BaseTestCommand {}
     TestCommand['requiresUsername'] = true;
 
@@ -996,14 +996,15 @@ describe('SfdxCommand', () => {
     verifyUXOutput({
       logJson: [
         {
-          actions: sfdxError.actions,
+          actions: sfError.actions,
           commandName: 'TestCommand',
+          context: 'TestCommand',
           data: 'here is more data',
           exitCode: 100,
-          message: sfdxError.message,
-          name: sfdxError.name,
-          result: sfdxError.data,
-          stack: sfdxError.stack,
+          message: sfError.message,
+          name: sfError.name,
+          result: sfError.data,
+          stack: sfError.stack,
           status: 100,
           warnings: ['DO NOT USE ME...'],
         },
@@ -1133,7 +1134,7 @@ describe('SfdxCommand', () => {
       }
       const output = await TestCommand.run(['--doflag', val]);
       if (err) {
-        const sfdxError = SfdxError.create('@salesforce/command', 'flags', 'InvalidFlagTypeError', [
+        const sfError = messages.createError('InvalidFlagTypeError', [
           val,
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore kind doesn't exist
@@ -1143,7 +1144,7 @@ describe('SfdxCommand', () => {
         expect(output).to.equal(undefined);
         expect(process.exitCode).to.equal(1);
         verifyUXOutput({
-          error: [['ERROR running TestCommand: ', sfdxError.message]],
+          error: [['ERROR running TestCommand: ', sfError.message]],
         });
       } else {
         expect(output).to.equal(TestCommand.output);
@@ -1220,11 +1221,11 @@ describe('SfdxCommand', () => {
     });
 
     function validateFlagAttributes(output: unknown, errName: string, flagName: string) {
-      const sfdxError = SfdxError.create('@salesforce/command', 'flags', errName, [flagName]);
+      const sfError = messages.createError(errName, [flagName]);
       expect(output).to.equal(undefined);
       expect(process.exitCode).to.equal(1);
       verifyUXOutput({
-        error: [['ERROR running TestCommand: ', sfdxError.message]],
+        error: [['ERROR running TestCommand: ', sfError.message]],
       });
     }
 
@@ -1549,7 +1550,7 @@ describe('SfdxCommand', () => {
 
 describe('format', () => {
   class TestCommand extends BaseTestCommand {
-    public format(error: SfdxError) {
+    public format(error: SfError) {
       return this.formatError(error);
     }
   }
@@ -1561,13 +1562,13 @@ describe('format', () => {
     const message = "it's a trap!";
     const name = 'BadError';
 
-    const sfdxError = new SfdxError(message, name);
-    sfdxError.stack = 'stack for BadError';
+    const sfError = new SfError(message, name);
+    sfError.stack = 'stack for BadError';
 
     const expectedFormat = ['ERROR: ', message];
 
     const config = stubInterface<IConfig>($$.SANDBOX);
-    expect(new TestCommand([], config).format(sfdxError)).to.deep.equal(expectedFormat);
+    expect(new TestCommand([], config).format(sfError)).to.deep.equal(expectedFormat);
   });
 
   it('should return expected formatting with a commandName set', () => {
@@ -1578,14 +1579,14 @@ describe('format', () => {
     const name = 'BadError';
     const commandName = 'TestCommand1';
 
-    const sfdxError = new SfdxError(message, name);
-    sfdxError.stack = 'stack for BadError';
-    sfdxError.setCommandName(commandName);
+    const sfError = new SfError(message, name);
+    sfError.stack = 'stack for BadError';
+    sfError.setContext(commandName);
 
     const expectedFormat = [`ERROR running ${commandName}: `, message];
 
     const config = stubInterface<IConfig>($$.SANDBOX);
-    expect(new TestCommand([], config).format(sfdxError)).to.deep.equal(expectedFormat);
+    expect(new TestCommand([], config).format(sfError)).to.deep.equal(expectedFormat);
   });
 
   it('should return expected formatting with actions', () => {
@@ -1596,13 +1597,13 @@ describe('format', () => {
     const name = 'BadError';
     const actions = ['take action 1', 'take action 2'];
 
-    const sfdxError = new SfdxError(message, name, actions);
-    sfdxError.stack = 'stack for BadError';
+    const sfError = new SfError(message, name, actions);
+    sfError.stack = 'stack for BadError';
 
     const expectedFormat = ['ERROR: ', message, '\n\nTry this:', `\n${actions[0]}`, `\n${actions[1]}`];
 
     const config = stubInterface<IConfig>($$.SANDBOX);
-    expect(new TestCommand([], config).format(sfdxError)).to.deep.equal(expectedFormat);
+    expect(new TestCommand([], config).format(sfError)).to.deep.equal(expectedFormat);
   });
 
   it('should return expected formatting with stack trace (in dev mode)', () => {
@@ -1612,14 +1613,14 @@ describe('format', () => {
     const message = "it's a trap!";
     const name = 'BadError';
 
-    const sfdxError = new SfdxError(message, name);
-    sfdxError.stack = 'stack for BadError';
+    const sfError = new SfError(message, name);
+    sfError.stack = 'stack for BadError';
 
-    const stackMsg = `\n*** Internal Diagnostic ***\n\n${sfdxError.stack}\n******\n`;
+    const stackMsg = `\n*** Internal Diagnostic ***\n\n${sfError.stack}\n******\n`;
     const expectedFormat = ['ERROR: ', message, stackMsg];
 
     const config = stubInterface<IConfig>($$.SANDBOX);
-    expect(new TestCommand([], config).format(sfdxError)).to.deep.equal(expectedFormat);
+    expect(new TestCommand([], config).format(sfError)).to.deep.equal(expectedFormat);
   });
 
   it('should return generate usage by default', () => {

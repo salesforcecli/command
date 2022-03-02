@@ -8,14 +8,14 @@
 import { fail } from 'assert';
 import { expect } from 'chai';
 
-import { Messages, SfdxError } from '@salesforce/core';
+import { Messages, SfError } from '@salesforce/core';
 
 import { Duration, NamedError } from '@salesforce/kit';
 import { hasFunction } from '@salesforce/ts-types';
 import { buildSfdxFlags, flags } from '../../src/sfdxFlags';
 
 Messages.importMessagesDirectory(__dirname);
-const messages: Messages = Messages.loadMessages('@salesforce/command', 'flags');
+const messages = Messages.loadMessages('@salesforce/command', 'flags');
 
 class MissingPropertyError extends NamedError {
   public constructor(property: string, flag: string) {
@@ -145,7 +145,7 @@ describe('SfdxFlags', () => {
         if (!(e instanceof Error)) {
           fail('error with no name');
         }
-        expect(e.name).to.equal('UnknownBuiltinFlagType');
+        expect(e.name).to.equal('UnknownBuiltinFlagTypeError');
       }
     });
   });
@@ -155,7 +155,7 @@ describe('SfdxFlags', () => {
       const flag = flags.string({ description: 'string', validate: /[0-9]+/ });
       if (!hasFunction(flag, 'parse')) throw new MissingPropertyError('parse', 'integer');
       expect(() => flag.parse('foo')).to.throw(
-        SfdxError,
+        SfError,
         'The flag value "foo" is not in the correct format for "string."'
       );
     });
@@ -169,7 +169,7 @@ describe('SfdxFlags', () => {
       });
       if (!hasFunction(flag, 'parse')) throw new MissingPropertyError('parse', 'date');
       expect(() => flag.parse('foo')).to.throw(
-        SfdxError,
+        SfError,
         'The flag value "foo" is not in the correct format for "date."'
       );
     });
@@ -180,19 +180,16 @@ describe('SfdxFlags', () => {
 
       if (!hasFunction(integer, 'parse')) throw new MissingPropertyError('parse', 'integer');
       expect(integer.parse('3')).to.equal(3);
-      expect(() => integer.parse('1')).to.throw(
-        SfdxError,
-        'Expected integer greater than or equal to 2 but received 1'
-      );
-      expect(() => integer.parse('5')).to.throw(SfdxError, 'Expected integer less than or equal to 4 but received 5');
+      expect(() => integer.parse('1')).to.throw(SfError, 'Expected integer greater than or equal to 2 but received 1');
+      expect(() => integer.parse('5')).to.throw(SfError, 'Expected integer less than or equal to 4 but received 5');
 
       if (!hasFunction(number, 'parse')) throw new MissingPropertyError('parse', 'number');
       expect(number.parse('2.5')).to.equal(2.5);
       expect(() => number.parse('1.5')).to.throw(
-        SfdxError,
+        SfError,
         'Expected number greater than or equal to 2 but received 1.5'
       );
-      expect(() => number.parse('4.5')).to.throw(SfdxError, 'Expected number less than or equal to 4 but received 4.5');
+      expect(() => number.parse('4.5')).to.throw(SfError, 'Expected number less than or equal to 4 but received 4.5');
 
       const milliseconds = flags.milliseconds({ description: 'milliseconds', min: 2, max: 4 });
       const minutes = flags.minutes({ description: 'minutes', min: 2, max: 4 });
@@ -201,29 +198,23 @@ describe('SfdxFlags', () => {
       if (!hasFunction(milliseconds, 'parse')) throw new MissingPropertyError('parse', 'milliseconds');
       expect(milliseconds.parse('2')).to.deep.equal(Duration.milliseconds(2));
       expect(() => milliseconds.parse('1')).to.throw(
-        SfdxError,
+        SfError,
         'Expected milliseconds greater than or equal to 2 but received 1'
       );
       expect(() => milliseconds.parse('5')).to.throw(
-        SfdxError,
+        SfError,
         'Expected milliseconds less than or equal to 4 but received 5'
       );
 
       if (!hasFunction(minutes, 'parse')) throw new MissingPropertyError('parse', 'minutes');
       expect(minutes.parse('4')).to.deep.equal(Duration.minutes(4));
-      expect(() => minutes.parse('1')).to.throw(
-        SfdxError,
-        'Expected minutes greater than or equal to 2 but received 1'
-      );
-      expect(() => minutes.parse('5')).to.throw(SfdxError, 'Expected minutes less than or equal to 4 but received 5');
+      expect(() => minutes.parse('1')).to.throw(SfError, 'Expected minutes greater than or equal to 2 but received 1');
+      expect(() => minutes.parse('5')).to.throw(SfError, 'Expected minutes less than or equal to 4 but received 5');
 
       if (!hasFunction(seconds, 'parse')) throw new MissingPropertyError('parse', 'seconds');
       expect(seconds.parse('3')).to.deep.equal(Duration.seconds(3));
-      expect(() => seconds.parse('1')).to.throw(
-        SfdxError,
-        'Expected seconds greater than or equal to 2 but received 1'
-      );
-      expect(() => seconds.parse('5')).to.throw(SfdxError, 'Expected seconds less than or equal to 4 but received 5');
+      expect(() => seconds.parse('1')).to.throw(SfError, 'Expected seconds greater than or equal to 2 but received 1');
+      expect(() => seconds.parse('5')).to.throw(SfError, 'Expected seconds less than or equal to 4 but received 5');
 
       const milliseconds2 = flags.milliseconds({
         description: 'milliseconds',
@@ -236,29 +227,23 @@ describe('SfdxFlags', () => {
       if (!hasFunction(milliseconds2, 'parse')) throw new MissingPropertyError('parse', 'milliseconds');
       expect(milliseconds2.parse('2')).to.deep.equal(Duration.milliseconds(2));
       expect(() => milliseconds2.parse('1')).to.throw(
-        SfdxError,
+        SfError,
         'Expected milliseconds greater than or equal to 2 but received 1'
       );
       expect(() => milliseconds2.parse('5')).to.throw(
-        SfdxError,
+        SfError,
         'Expected milliseconds less than or equal to 4 but received 5'
       );
 
       if (!hasFunction(minutes2, 'parse')) throw new MissingPropertyError('parse', 'minutes');
       expect(minutes2.parse('4')).to.deep.equal(Duration.minutes(4));
-      expect(() => minutes2.parse('1')).to.throw(
-        SfdxError,
-        'Expected minutes greater than or equal to 2 but received 1'
-      );
-      expect(() => minutes2.parse('5')).to.throw(SfdxError, 'Expected minutes less than or equal to 4 but received 5');
+      expect(() => minutes2.parse('1')).to.throw(SfError, 'Expected minutes greater than or equal to 2 but received 1');
+      expect(() => minutes2.parse('5')).to.throw(SfError, 'Expected minutes less than or equal to 4 but received 5');
 
       if (!hasFunction(seconds2, 'parse')) throw new MissingPropertyError('parse', 'seconds');
       expect(seconds2.parse('3')).to.deep.equal(Duration.seconds(3));
-      expect(() => seconds2.parse('1')).to.throw(
-        SfdxError,
-        'Expected seconds greater than or equal to 2 but received 1'
-      );
-      expect(() => seconds2.parse('5')).to.throw(SfdxError, 'Expected seconds less than or equal to 4 but received 5');
+      expect(() => seconds2.parse('1')).to.throw(SfError, 'Expected seconds greater than or equal to 2 but received 1');
+      expect(() => seconds2.parse('5')).to.throw(SfError, 'Expected seconds less than or equal to 4 but received 5');
     });
 
     describe('arrays', () => {
@@ -272,7 +257,7 @@ describe('SfdxFlags', () => {
         const array = flags.array({ description: 'test', options: ['1', '3', '5'] });
         if (!hasFunction(array, 'parse')) throw new MissingPropertyError('parse', 'array');
         expect(() => array.parse('1,2,3')).to.throw(
-          SfdxError,
+          SfError,
           'The flag value "1,2,3" is not in the correct format for "array." Must only contain values in [1,3,5].'
         );
       });
@@ -287,7 +272,7 @@ describe('SfdxFlags', () => {
         const array = flags.array({ description: 'test', validate: /[0-9]+/ });
         if (!hasFunction(array, 'parse')) throw new MissingPropertyError('parse', 'array');
         expect(() => array.parse('1,2,c')).to.throw(
-          SfdxError,
+          SfError,
           'The flag value "1,2,c" is not in the correct format for "array." Must only contain valid values.'
         );
       });
@@ -303,7 +288,7 @@ describe('SfdxFlags', () => {
         if (!hasFunction(array, 'parse')) throw new MissingPropertyError('parse', 'array');
         // expect validations to fail before options checking
         expect(() => array.parse('1,2,c')).to.throw(
-          SfdxError,
+          SfError,
           'The flag value "1,2,c" is not in the correct format for "array." Must only contain valid values.'
         );
       });
@@ -318,7 +303,7 @@ describe('SfdxFlags', () => {
         const array = flags.array({ description: 'test', map: (v: string) => parseInt(v, 10), options: [1, 3, 5] });
         if (!hasFunction(array, 'parse')) throw new MissingPropertyError('parse', 'array');
         expect(() => array.parse('1,2,3')).to.throw(
-          SfdxError,
+          SfError,
           'The flag value "1,2,3" is not in the correct format for "array." Must only contain values in [1,3,5].'
         );
       });
@@ -333,7 +318,7 @@ describe('SfdxFlags', () => {
         const array = flags.array({ description: 'test', map: (v: string) => parseInt(v, 10), validate: /[0-9]+/ });
         if (!hasFunction(array, 'parse')) throw new MissingPropertyError('parse', 'array');
         expect(() => array.parse('1,2,c')).to.throw(
-          SfdxError,
+          SfError,
           'The flag value "1,2,c" is not in the correct format for "array." Must only contain valid values.'
         );
       });
@@ -359,7 +344,7 @@ describe('SfdxFlags', () => {
         if (!hasFunction(array, 'parse')) throw new MissingPropertyError('parse', 'array');
         // expect validations to fail before options checking
         expect(() => array.parse('1,2,c')).to.throw(
-          SfdxError,
+          SfError,
           'The flag value "1,2,c" is not in the correct format for "array." Must only contain valid values.'
         );
       });

@@ -7,7 +7,7 @@
 import { Plugin } from 'fancy-test/lib/types';
 import * as oclifTest from '@oclif/test';
 import { command, Config, expect, FancyTypes } from '@oclif/test';
-import { AuthFields, SfdxProject } from '@salesforce/core';
+import { AuthFields, SfProject } from '@salesforce/core';
 import { TestContext, testSetup } from '@salesforce/core/lib/testSetup';
 import {
   AnyJson,
@@ -109,23 +109,23 @@ const withConnectionRequest = (
   };
 };
 
-const withProject = (sfdxProjectJson?: JsonMap): Plugin<unknown> => {
+const withProject = (SfProjectJson?: JsonMap): Plugin<unknown> => {
   return {
     run(): void {
       // Restore first if already stubbed by $$.inProject()
       /* eslint-disable-next-line @typescript-eslint/unbound-method */
-      const projPathStub = SfdxProject.resolveProjectPath as SinonStub;
+      const projPathStub = SfProject.resolveProjectPath as SinonStub;
       if (projPathStub.restore) {
         projPathStub.restore();
       }
-      $$.SANDBOX.stub(SfdxProject, 'resolveProjectPath').callsFake((path: string | undefined) => {
+      $$.SANDBOX.stub(SfProject, 'resolveProjectPath').callsFake((path: string | undefined) => {
         return $$.localPathRetriever(path || $$.id);
       });
       const DEFAULT_PROJECT_JSON = {
         sfdcLoginUrl: 'https://login.salesforce.com',
       };
-      $$.configStubs.SfdxProjectJson = {
-        contents: Object.assign({}, DEFAULT_PROJECT_JSON, sfdxProjectJson),
+      $$.configStubs.SfProjectJson = {
+        contents: Object.assign({}, DEFAULT_PROJECT_JSON, SfProjectJson),
       };
     },
   };

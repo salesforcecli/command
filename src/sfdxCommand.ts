@@ -7,17 +7,7 @@
 
 import Command from '@oclif/command';
 import { OutputArgs, OutputFlags } from '@oclif/parser';
-import {
-  ConfigAggregator,
-  Global,
-  Lifecycle,
-  Logger,
-  Messages,
-  Mode,
-  Org,
-  SfdxError,
-  SfdxProject,
-} from '@salesforce/core';
+import { ConfigAggregator, Global, Lifecycle, Logger, Messages, Mode, Org, SfError, SfProject } from '@salesforce/core';
 import { env } from '@salesforce/kit';
 import { AnyJson, Dictionary, get, isBoolean, JsonMap, Optional } from '@salesforce/ts-types';
 import { has } from '@salesforce/ts-types';
@@ -28,6 +18,15 @@ import { DeprecationDefinition, TableOptions, UX } from './ux';
 import { Deprecation } from './ux';
 
 Messages.importMessagesDirectory(__dirname);
+const messages = Messages.load('@salesforce/command', 'command', [
+  'RequiresProjectError',
+  'RequiresUsernameError',
+  'apiVersionOverrideWarning',
+  'InvalidVarargsFormat',
+  'DuplicateVararg',
+  'VarargsRequired',
+  'RequiresDevhubUsernameError',
+]);
 
 export interface SfdxResult {
   data?: AnyJson;
@@ -136,7 +135,7 @@ export abstract class SfdxCommand extends Command {
   protected hubOrg?: Org;
 
   // An SFDX project for this command to reference.
-  protected project?: SfdxProject;
+  protected project?: SfProject;
 
   // The command output and formatting; assigned in _run
   protected result!: Result;
@@ -188,10 +187,10 @@ export abstract class SfdxCommand extends Command {
     // Throw an error if the command requires to be run from within an SFDX project but we
     // don't have a local config.
     try {
-      this.project = await SfdxProject.resolve();
+      this.project = await SfProject.resolve();
     } catch (err) {
       if (err instanceof Error && err.name === 'InvalidProjectWorkspace') {
-        throw SfdxError.create('@salesforce/command', 'command', 'RequiresProjectError');
+        throw messages.createError('RequiresProjectError');
       }
       throw err;
     }
@@ -211,7 +210,7 @@ export abstract class SfdxCommand extends Command {
     } catch (err) {
       if (this.statics.requiresUsername) {
         if (err instanceof Error && (err.name === 'NoUsername' || err.name === 'AuthInfoCreationError')) {
-          throw SfdxError.create('@salesforce/command', 'command', 'RequiresUsernameError');
+          throw messages.createError('RequiresUsernameError');
         }
         throw err;
       }
@@ -235,9 +234,9 @@ export abstract class SfdxCommand extends Command {
       // flag set and no defaultdevhubusername set.
       if (this.statics.requiresDevhubUsername && err instanceof Error) {
         if (err.name === 'AuthInfoCreationError' || err.name === 'NoUsername') {
-          throw SfdxError.create('@salesforce/command', 'command', 'RequiresDevhubUsernameError');
+          throw messages.createError('RequiresDevhubUsernameError');
         }
-        throw SfdxError.wrap(err);
+        throw SfError.wrap(err);
       }
     }
   }
@@ -289,9 +288,6 @@ export abstract class SfdxCommand extends Command {
 
     // Finally invoke the super init now that this.ux is properly configured.
     await super.init();
-
-    // Load messages
-    const messages: Messages = Messages.loadMessages('@salesforce/command', 'command');
 
     // Turn off strict parsing if varargs are set.  Otherwise use static strict setting.
     const strict = this.statics.varargs ? !this.statics.varargs : this.statics.strict;
@@ -355,7 +351,7 @@ export abstract class SfdxCommand extends Command {
     await this.hooksFromLifecycleEvent(this.lifecycleEventNames);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-module-boundary-types
   protected async catch(err: any): Promise<void> {
     // Let oclif handle exit signal errors.
     if (err.code === 'EEXIT') {
@@ -364,17 +360,22 @@ export abstract class SfdxCommand extends Command {
 
     await this.initLoggerAndUx();
 
-    // Convert all other errors to SfdxErrors for consistency and set the command name on the error.
-    const error: SfdxError = err.setCommandName ? err : SfdxError.wrap(err);
-    error.setCommandName(this.statics.name);
+    // Convert all other errors to SfErrors for consistency and set the command name on the error.
+    const error = SfError.wrap(err);
+    error.setContext(this.statics.name);
 
     process.exitCode = process.exitCode || error.exitCode || 1;
 
-    const userDisplayError = Object.assign(this.getJsonResultObject(error.data, error.exitCode), {
-      ...error.toObject(),
-      stack: error.stack,
-      warnings: Array.from(UX.warnings),
-    });
+    const userDisplayError = Object.assign(
+      { result: error.data, status: error.exitCode },
+      {
+        ...error.toObject(),
+        stack: error.stack,
+        warnings: Array.from(UX.warnings),
+        // keep commandName key for backwards compatibility
+        commandName: error.context,
+      }
+    );
 
     if (this.isJson) {
       // This should default to true, which will require a major version bump.
@@ -463,7 +464,7 @@ export abstract class SfdxCommand extends Command {
 
     // If this command requires varargs, throw if none are provided.
     if (!args.length && !isBoolean(descriptor) && descriptor.required) {
-      throw SfdxError.create('@salesforce/command', 'command', 'VarargsRequired');
+      throw messages.createError('VarargsRequired');
     }
 
     // Validate the format of the varargs
@@ -471,13 +472,13 @@ export abstract class SfdxCommand extends Command {
       const split = arg.split('=');
 
       if (split.length !== 2) {
-        throw SfdxError.create('@salesforce/command', 'command', 'InvalidVarargsFormat', [arg]);
+        throw messages.createError('InvalidVarargsFormat', [arg]);
       }
 
       const [name, value] = split;
 
       if (varargs[name]) {
-        throw SfdxError.create('@salesforce/command', 'command', 'DuplicateVararg', [name]);
+        throw messages.createError('DuplicateVararg', [name]);
       }
 
       if (!isBoolean(descriptor) && descriptor.validator) {
@@ -497,10 +498,9 @@ export abstract class SfdxCommand extends Command {
    *
    * @returns {string[]} Returns decorated messages.
    */
-  protected formatError(error: SfdxError): string[] {
+  protected formatError(error: SfError): string[] {
     const colorizedArgs: string[] = [];
-    // We should remove error.commandName since we should always use the actual command id.
-    const commandName = this.id || error.commandName;
+    const commandName = this.id || error.context;
     const runningWith = commandName ? ` running ${commandName}` : '';
     colorizedArgs.push(chalk.bold(`ERROR${runningWith}: `));
     colorizedArgs.push(chalk.red(error.message));
@@ -509,7 +509,7 @@ export abstract class SfdxCommand extends Command {
     if (get(error, 'actions.length')) {
       colorizedArgs.push(`\n\n${chalk.blue(chalk.bold('Try this:'))}`);
       if (error.actions) {
-        error.actions.forEach((action) => {
+        error.actions.forEach((action: string) => {
           colorizedArgs.push(`\n${chalk.red(action)}`);
         });
       }
@@ -540,8 +540,6 @@ export abstract class SfdxCommand extends Command {
    * register events for command specific hooks
    */
   private async hooksFromLifecycleEvent(lifecycleEventNames: string[]): Promise<void> {
-    // eslint-disable-line @typescript-eslint/require-await, prettier/prettier
-    // eslint-disable-line prettier/prettier, @typescript-eslint/require-await
     const options = {
       Command: this.ctor,
       argv: this.argv,
@@ -551,7 +549,7 @@ export abstract class SfdxCommand extends Command {
     const lifecycle = Lifecycle.getInstance();
 
     lifecycleEventNames.forEach((eventName) => {
-      lifecycle.on(eventName, async (result) => {
+      lifecycle.on(eventName, async (result: AnyJson) => {
         await this.config.runHook(eventName, Object.assign(options, { result }));
       });
     });
@@ -563,8 +561,8 @@ export abstract class SfdxCommand extends Command {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public static get flags(): Flags.Input<any> {
     return buildSfdxFlags(this.flagsConfig, {
-      targetdevhubusername: !!(this.supportsDevhubUsername || this.requiresDevhubUsername),
-      targetusername: !!(this.supportsUsername || this.requiresUsername),
+      targetdevhubusername: this.supportsDevhubUsername || this.requiresDevhubUsername,
+      targetusername: this.supportsUsername || this.requiresUsername,
     });
   }
 
@@ -576,8 +574,8 @@ export abstract class SfdxCommand extends Command {
    * Actual command run code goes here.
    *
    * @returns {Promise<any>} Returns a promise
-   * @throws {Error | SfdxError} Throws an error. If the error is not an SfdxError, it will
-   * be wrapped in an SfdxError. If the error contains exitCode field, process.exitCode
+   * @throws {Error | SfError} Throws an error. If the error is not an SfError, it will
+   * be wrapped in an SfError. If the error contains exitCode field, process.exitCode
    * will set to it.
    */
   public abstract run(): Promise<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
