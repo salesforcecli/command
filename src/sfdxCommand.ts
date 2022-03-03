@@ -4,18 +4,15 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-
-import Command from '@oclif/command';
-import { OutputArgs, OutputFlags } from '@oclif/parser';
+import { Command, loadHelpClass } from '@oclif/core';
 import { ConfigAggregator, Global, Lifecycle, Logger, Messages, Mode, Org, SfError, SfProject } from '@salesforce/core';
 import { env } from '@salesforce/kit';
-import { AnyJson, Dictionary, get, isBoolean, JsonMap, Optional } from '@salesforce/ts-types';
-import { has } from '@salesforce/ts-types';
+import { AnyJson, Dictionary, get, has, isBoolean, JsonMap, Optional } from '@salesforce/ts-types';
 import chalk from 'chalk';
+import { OutputArgs, OutputFlags } from '@oclif/core/lib/interfaces';
 import { DocOpts } from './docOpts';
 import { buildSfdxFlags, flags as Flags, FlagsConfig } from './sfdxFlags';
-import { DeprecationDefinition, TableOptions, UX } from './ux';
-import { Deprecation } from './ux';
+import { Deprecation, DeprecationDefinition, TableOptions, UX } from './ux';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.load('@salesforce/command', 'command', [
@@ -282,8 +279,10 @@ export abstract class SfdxCommand extends Command {
 
     // If the -h flag is set in argv and not overridden by the subclass, emit help and exit.
     if (this.shouldEmitHelp()) {
-      // eslint-disable-next-line no-underscore-dangle
-      this._help();
+      const Help = await loadHelpClass(this.config);
+      const help = new Help(this.config, this.config.pjson.helpOptions);
+      await help.showHelp(this.argv);
+      return this.exit(0);
     }
 
     // Finally invoke the super init now that this.ux is properly configured.
@@ -293,7 +292,7 @@ export abstract class SfdxCommand extends Command {
     const strict = this.statics.varargs ? !this.statics.varargs : this.statics.strict;
 
     // Parse the command to get flags and args
-    const { args, flags, argv } = this.parse({
+    const { args, flags, argv } = await this.parse({
       flags: this.statics.flags,
       args: this.statics.args,
       strict,

@@ -9,7 +9,6 @@ import { fail } from 'assert';
 import { join } from 'path';
 import { URL } from 'url';
 import * as util from 'util';
-import { IConfig } from '@oclif/config';
 import {
   ConfigAggregator,
   Global,
@@ -29,6 +28,7 @@ import { AnyJson, Dictionary, ensureJsonMap, JsonArray, JsonMap, keysOf, Optiona
 import { expect } from 'chai';
 import chalk from 'chalk';
 import { SinonStub } from 'sinon';
+import { Config } from '@oclif/core';
 import { Result, SfdxCommand, SfdxResult } from '../../src/sfdxCommand';
 import { flags, FlagsConfig } from '../../src/sfdxFlags';
 import { UX } from '../../src/ux';
@@ -455,7 +455,7 @@ describe('SfdxCommand', () => {
       expect(lines.length).to.be.gte(1);
       // eslint-disable-next-line no-control-regex
       const help = lines[0].slice(0, lines[0].indexOf('\n')).replace(/\u001b\[[0-9]+m/g, '');
-      expect(help).to.equal('USAGE');
+      expect(help).to.equal('Salesforce CLI base command class');
     });
   });
 
@@ -487,7 +487,7 @@ describe('SfdxCommand', () => {
       expect(lines.length).to.be.gte(1);
       // eslint-disable-next-line no-control-regex
       const help = lines[0].slice(0, lines[0].indexOf('\n')).replace(/\u001b\[[0-9]+m/g, '');
-      expect(help).to.equal('USAGE');
+      expect(help).to.equal('Salesforce CLI base command class');
     });
   });
 
@@ -1122,7 +1122,7 @@ describe('SfdxCommand', () => {
       id: ` ${messages.getMessage('FormattingMessageId')}`,
       url: ` ${messages.getMessage('FormattingMessageUrl')}`,
     };
-
+    // todo
     async function validateFlag(flagType: keyof typeof flags, val: string, err: boolean) {
       const create = flags[flagType];
       class TestCommand extends BaseTestCommand {
@@ -1151,14 +1151,6 @@ describe('SfdxCommand', () => {
         verifyUXOutput();
       }
     }
-
-    it('should validate filepath flag type for valid path', async () => {
-      return validateFlag('filepath', '/my/path/to/file.txt', false);
-    });
-
-    it('should validate directory flag type for invalid path', async () => {
-      return validateFlag('directory', '/my/path/to/??file.txt', true);
-    });
 
     it('should validate date flag type for invalid date', async () => {
       return validateFlag('date', 'this is a date', true);
@@ -1331,12 +1323,13 @@ describe('SfdxCommand', () => {
       let inputs: Dictionary<any> = {};
 
       class FlagsTestCommand extends BaseTestCommand {
-        public static flagsConfig: FlagsConfig = {
+        public static readonly flagsConfig: FlagsConfig = {
           // oclif
           boolean: flags.boolean({ description: 'boolean' }),
           enum: flags.enum({ description: 'enum', options: ['e', 'f'] }),
           help: flags.help({ char: 'h' }),
           integer: flags.integer({ description: 'integer' }),
+          // @ts-ignore
           option: flags.option({ description: 'custom', parse: (val: string) => val.toUpperCase() }),
           string: flags.string({ description: 'string' }),
           version: flags.version(),
@@ -1352,9 +1345,7 @@ describe('SfdxCommand', () => {
           }),
           date: flags.date({ description: 'date' }),
           datetime: flags.datetime({ description: 'datetime' }),
-          directory: flags.directory({ description: 'directory' }),
           email: flags.email({ description: 'some email' }),
-          filepath: flags.filepath({ description: 'filepath' }),
           id: flags.id({ description: 'id' }),
           milliseconds: flags.milliseconds({ description: 'milliseconds' }),
           minutes: flags.minutes({ description: 'minutes' }),
@@ -1373,46 +1364,48 @@ describe('SfdxCommand', () => {
         public static supportsDevhubUsername = true;
 
         public async run() {
-          await super.run();
+          await super.init();
           inputs = this.flags;
           return this.statics.output;
         }
       }
+      const f = new FlagsTestCommand(
+        [
+          // oclif
+          '--boolean',
+          '--enum=e',
+          // --help exits, so skip it in this test
+          '--integer=10',
+          '--option=o',
+          '--string=s',
+          // --version exits, so skip it in this test
 
-      await FlagsTestCommand.run([
-        // oclif
-        '--boolean',
-        '--enum=e',
-        // --help exits, so skip it in this test
-        '--integer=10',
-        '--option=o',
-        '--string=s',
-        // --version exits, so skip it in this test
+          // sfdx
+          '--array=1,2,3',
+          '--optsarray=1,3,5',
+          '--intarray=1,2,3',
+          '--optsintarray=1,3,5',
+          '--date=01-02-2000 GMT',
+          '--datetime=01/02/2000 01:02:34 GMT',
+          '--email=bill@thecat.org',
+          '--id=00Dxxxxxxxxxxxx',
+          '--milliseconds=5000',
+          '--minutes=2',
+          '--number=0xdeadbeef',
+          '--seconds=5',
+          '--url=http://example.com/foo/bar',
 
-        // sfdx
-        '--array=1,2,3',
-        '--optsarray=1,3,5',
-        '--intarray=1,2,3',
-        '--optsintarray=1,3,5',
-        '--date=01-02-2000 GMT',
-        '--datetime=01/02/2000 01:02:34 GMT',
-        '--email=bill@thecat.org',
-        '--filepath=/home/someone/.config',
-        '--id=00Dxxxxxxxxxxxx',
-        '--milliseconds=5000',
-        '--minutes=2',
-        '--number=0xdeadbeef',
-        '--seconds=5',
-        '--url=http://example.com/foo/bar',
-
-        // builtins
-        '--apiversion=42.0',
-        '--concise',
-        '--quiet',
-        '--verbose',
-        '--targetdevhubusername=foo',
-        '--targetusername=bar',
-      ]);
+          // builtins
+          '--apiversion=42.0',
+          '--concise',
+          '--quiet',
+          '--verbose',
+          '--targetdevhubusername=foo',
+          '--targetusername=bar',
+        ],
+        Config.prototype
+      );
+      await f.run();
 
       expect(inputs.boolean).to.be.true;
       expect(inputs.enum).to.equal('e');
@@ -1427,7 +1420,6 @@ describe('SfdxCommand', () => {
       expect(inputs.date.toISOString()).to.equal('2000-01-02T00:00:00.000Z');
       expect(inputs.datetime.toISOString()).to.equal('2000-01-02T01:02:34.000Z');
       expect(inputs.email).to.equal('bill@thecat.org');
-      expect(inputs.filepath).to.equal('/home/someone/.config');
       expect(inputs.id).to.equal('00Dxxxxxxxxxxxx');
       expect(inputs.milliseconds).to.deep.equal(Duration.milliseconds(5000));
       expect(inputs.minutes).to.deep.equal(Duration.minutes(2));
@@ -1567,7 +1559,8 @@ describe('format', () => {
 
     const expectedFormat = ['ERROR: ', message];
 
-    const config = stubInterface<IConfig>($$.SANDBOX);
+    const config = stubInterface<FlagsConfig>($$.SANDBOX);
+    // @ts-ignore
     expect(new TestCommand([], config).format(sfError)).to.deep.equal(expectedFormat);
   });
 
@@ -1585,7 +1578,8 @@ describe('format', () => {
 
     const expectedFormat = [`ERROR running ${commandName}: `, message];
 
-    const config = stubInterface<IConfig>($$.SANDBOX);
+    const config = stubInterface<Config>($$.SANDBOX);
+    // @ts-ignore
     expect(new TestCommand([], config).format(sfError)).to.deep.equal(expectedFormat);
   });
 
@@ -1602,7 +1596,8 @@ describe('format', () => {
 
     const expectedFormat = ['ERROR: ', message, '\n\nTry this:', `\n${actions[0]}`, `\n${actions[1]}`];
 
-    const config = stubInterface<IConfig>($$.SANDBOX);
+    const config = stubInterface<FlagsConfig>($$.SANDBOX);
+    // @ts-ignore
     expect(new TestCommand([], config).format(sfError)).to.deep.equal(expectedFormat);
   });
 
@@ -1619,7 +1614,8 @@ describe('format', () => {
     const stackMsg = `\n*** Internal Diagnostic ***\n\n${sfError.stack}\n******\n`;
     const expectedFormat = ['ERROR: ', message, stackMsg];
 
-    const config = stubInterface<IConfig>($$.SANDBOX);
+    const config = stubInterface<FlagsConfig>($$.SANDBOX);
+    // @ts-ignore
     expect(new TestCommand([], config).format(sfError)).to.deep.equal(expectedFormat);
   });
 
