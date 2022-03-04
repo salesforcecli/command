@@ -16,13 +16,13 @@ import { Deprecation, DeprecationDefinition, TableOptions, UX } from './ux';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.load('@salesforce/command', 'command', [
-  'RequiresProjectError',
-  'RequiresUsernameError',
-  'apiVersionOverrideWarning',
-  'InvalidVarargsFormat',
-  'DuplicateVararg',
-  'VarargsRequired',
-  'RequiresDevhubUsernameError',
+  'error.RequiresProject',
+  'error.RequiresUsername',
+  'warning.ApiVersionOverride',
+  'error.InvalidVarargs',
+  'error.DuplicateVarargs',
+  'error.VarargsRequired',
+  'error.RequiresDevhubUsername',
 ]);
 
 export interface SfdxResult {
@@ -187,7 +187,7 @@ export abstract class SfdxCommand extends Command {
       this.project = await SfProject.resolve();
     } catch (err) {
       if (err instanceof Error && err.name === 'InvalidProjectWorkspace') {
-        throw messages.createError('RequiresProjectError');
+        throw messages.createError('error.RequiresProject');
       }
       throw err;
     }
@@ -207,7 +207,7 @@ export abstract class SfdxCommand extends Command {
     } catch (err) {
       if (this.statics.requiresUsername) {
         if (err instanceof Error && (err.name === 'NoUsername' || err.name === 'AuthInfoCreationError')) {
-          throw messages.createError('RequiresUsernameError');
+          throw messages.createError('error.RequiresUsername');
         }
         throw err;
       }
@@ -231,7 +231,7 @@ export abstract class SfdxCommand extends Command {
       // flag set and no defaultdevhubusername set.
       if (this.statics.requiresDevhubUsername && err instanceof Error) {
         if (err.name === 'AuthInfoCreationError' || err.name === 'NoUsername') {
-          throw messages.createError('RequiresDevhubUsernameError');
+          throw messages.createError('error.RequiresDevhubUsername');
         }
         throw SfError.wrap(err);
       }
@@ -333,7 +333,7 @@ export abstract class SfdxCommand extends Command {
     // if it's overridden.
     const apiVersion = this.configAggregator.getInfo('apiVersion');
     if (apiVersion && apiVersion.value && !flags.apiversion) {
-      this.ux.warn(messages.getMessage('apiVersionOverrideWarning', [JSON.stringify(apiVersion.value)]));
+      this.ux.warn(messages.getMessage('warning.ApiVersionOverride', [JSON.stringify(apiVersion.value)]));
     }
 
     // Assign this.org if the command supports or requires a username.
@@ -463,7 +463,7 @@ export abstract class SfdxCommand extends Command {
 
     // If this command requires varargs, throw if none are provided.
     if (!args.length && !isBoolean(descriptor) && descriptor.required) {
-      throw messages.createError('VarargsRequired');
+      throw messages.createError('error.VarargsRequired');
     }
 
     // Validate the format of the varargs
@@ -471,13 +471,13 @@ export abstract class SfdxCommand extends Command {
       const split = arg.split('=');
 
       if (split.length !== 2) {
-        throw messages.createError('InvalidVarargsFormat', [arg]);
+        throw messages.createError('error.InvalidVarargs', [arg]);
       }
 
       const [name, value] = split;
 
       if (varargs[name]) {
-        throw messages.createError('DuplicateVararg', [name]);
+        throw messages.createError('error.DuplicateVarargs', [name]);
       }
 
       if (!isBoolean(descriptor) && descriptor.validator) {
