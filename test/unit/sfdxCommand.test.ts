@@ -1117,10 +1117,10 @@ describe('SfdxCommand', () => {
 
   describe('SfdxFlags Custom Attributes', () => {
     const ERR_NEXT_STEPS: Dictionary<string> = {
-      date: ` ${messages.getMessage('FormattingMessageDate')}`,
-      datetime: ` ${messages.getMessage('FormattingMessageDate')}`,
-      id: ` ${messages.getMessage('FormattingMessageId')}`,
-      url: ` ${messages.getMessage('FormattingMessageUrl')}`,
+      date: ` ${messages.getMessage('error.FormattingMessageDate')}`,
+      datetime: ` ${messages.getMessage('error.FormattingMessageDate')}`,
+      id: ` ${messages.getMessage('error.FormattingMessageId')}`,
+      url: ` ${messages.getMessage('error.FormattingMessageId')}`,
     };
     // todo
     async function validateFlag(flagType: keyof typeof flags, val: string, err: boolean) {
@@ -1134,7 +1134,7 @@ describe('SfdxCommand', () => {
       }
       const output = await TestCommand.run(['--doflag', val]);
       if (err) {
-        const sfError = messages.createError('InvalidFlagTypeError', [
+        const sfError = messages.createError('error.InvalidFlagType', [
           val,
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore kind doesn't exist
@@ -1234,7 +1234,7 @@ describe('SfdxCommand', () => {
       };
 
       const output = await TestCommand.run(['--myflag', 'input']);
-      validateFlagAttributes(output, 'InvalidLongDescriptionFormat', 'myflag');
+      validateFlagAttributes(output, 'error.InvalidLongDescriptionFormat', 'myflag');
     });
 
     it('should validate description is defined', async () => {
@@ -1245,7 +1245,7 @@ describe('SfdxCommand', () => {
         myflag: flags.string({ char: 'm' }),
       };
       const output = await TestCommand.run(['--myflag', 'input']);
-      validateFlagAttributes(output, 'MissingOrInvalidFlagDescription', 'myflag');
+      validateFlagAttributes(output, 'error.MissingOrInvalidFlagDescription', 'myflag');
     });
 
     it('should validate char length is one', async () => {
@@ -1259,7 +1259,7 @@ describe('SfdxCommand', () => {
         }),
       };
       const output = await TestCommand.run(['--myflag', 'input']);
-      validateFlagAttributes(output, 'InvalidFlagChar', 'myflag');
+      validateFlagAttributes(output, 'error.InvalidFlagChar', 'myflag');
     });
 
     it('should validate char is alphabetical', async () => {
@@ -1270,7 +1270,7 @@ describe('SfdxCommand', () => {
         myflag: flags.string({ char: '5', description: 'bar' }),
       };
       const output = await TestCommand.run(['--myflag', 'input']);
-      validateFlagAttributes(output, 'InvalidFlagChar', 'myflag');
+      validateFlagAttributes(output, 'error.InvalidFlagChar', 'myflag');
     });
 
     it('should validate flag name is all lowercase', async () => {
@@ -1282,7 +1282,7 @@ describe('SfdxCommand', () => {
         },
       };
       const output = await TestCommand.run(['--myFlag', 'input']);
-      validateFlagAttributes(output, 'InvalidFlagName', 'myFlag');
+      validateFlagAttributes(output, 'error.InvalidFlagName', 'myFlag');
     });
 
     it('should validate flag name is all lowercase for oclif type flags', async () => {
@@ -1294,7 +1294,7 @@ describe('SfdxCommand', () => {
         }),
       };
       const output = await TestCommand.run(['--myFlag', 'input']);
-      validateFlagAttributes(output, 'InvalidFlagName', 'myFlag');
+      validateFlagAttributes(output, 'error.InvalidFlagName', 'myFlag');
     });
 
     it('should validate that undefined is not a valid flag type value', async () => {

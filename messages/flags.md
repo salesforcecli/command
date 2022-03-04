@@ -1,119 +1,119 @@
-# jsonFlagDescription
+# flags.json.description
 
 format output as json
 
-# jsonFlagLongDescription
+# flags.json.description.long
 
 Format output as JSON.
 
-# loglevelFlagDescription
+# flags.loglevel.description
 
 logging level for this command invocation
 
-# loglevelFlagLongDescription
+# flags.loglevel.description.long
 
 The logging level for this command invocation. Logs are stored in $HOME/.sfdx/sfdx.log.
 
-# apiversionFlagDescription
+# flags.apiversion.description
 
 override the api version used for api requests made by this command
 
-# apiversionFlagLongDescription
+# flags.apiversion.description.long
 
 Override the API version used for API requests made by this command.
 
-# verboseFlagDescription
+# flags.verbose.description
 
 emit additional command output to stdout
 
-# verboseFlagLongDescription
+# flags.verbose.description.long
 
 Emit additional command output to stdout.
 
-# conciseFlagDescription
+# flags.concise.description
 
 emit brief command output to stdout
 
-# conciseFlagLongDescription
+# flags.long.description.long
 
 Emit brief command output to stdout.
 
-# quietFlagDescription
+# flags.quiet.description
 
 nothing emitted stdout
 
-# quietFlagLongDescription
+# flags.quiet.description.long
 
 Command does not output to stdout.
 
-# targetusernameFlagDescription
+# flags.targetusername.description
 
 username or alias for the target org; overrides default target org
 
-# targetusernameFlagLongDescription
+# flags.targetusername.description.long
 
 A username or alias for the target org. Overrides the default target org.
 
-# targetdevhubusernameFlagDescription
+# flags.targetdevhubusername.description
 
 username or alias for the dev hub org; overrides default dev hub org
 
-# targetdevhubusernameFlagLongDescription
+# flags.targetdevhubusername.description.long
 
 A username or alias for the target Dev Hub org. Overrides the default Dev Hub org.
 
-# InvalidApiVersionError
+# error.InvalidApiVersion
 
 The API version '%s' is not valid. Must be in the format, 'i.0'
 
-# InvalidFlagTypeError
+# error.InvalidFlagType
 
 The flag value "%s" is not in the correct format for "%s."%s
 
-# InvalidLongDescriptionFormat
+# error.InvalidLongDescriptionFormat
 
 The flag %s's longDescription attribute must be a string.
 
-# UnknownFlagError
+# error.UnknownFlag
 
 Cannot enable unknown flag: %s
 
-# UnknownBuiltinFlagType
+# error.UnknownBuiltinFlagType
 
 No built-in flag named '%s'.
 
-# MissingOrInvalidFlagDescription
+# error.MissingOrInvalidFlagDescription
 
 The flag %s is missing the description attribute, or the description is not a string.
 
-# InvalidFlagChar
+# error.InvalidFlagChar
 
 The flag %s's char attribute must be one alphabetical character long.
 
-# InvalidFlagName
+# error.InvalidFlagName
 
 The flag %s's name must be a lowercase string that may contain numbers and hyphens.
 
-# FormattingMessageArrayValue
+# error.FormattingMessageArrayValue
 
 Must only contain valid values.
 
-# FormattingMessageArrayOption
+# error.FormattingMessageArrayOption
 
 Must only contain values in [%s].
 
-# FormattingMessageDate
+# error.FormattingMessageDate
 
 Must be parsable by the Javascript Date object.
 
-# FormattingMessageId
+# error.FormattingMessageId
 
 Must be a 15- or 18-char string in the format "00Dxxxxxxxxxxxx", where "00D" is a valid sObject prefix.
 
-# FormattingMessageUrl
+# error.FormattingMessageId
 
 Must be a valid url in the format "http://salesforce.com". See https://nodejs.org/api/url.html#url_url_strings_and_url_object
 
-# InvalidLoggerLevelError
+# error.InvalidLoggerLevel
 
 You specified an invalid log level. Try one of these: TRACE, DEBUG, INFO, WARN, ERROR, FATAL.

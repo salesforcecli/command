@@ -36,40 +36,40 @@ import { Deprecation } from './ux';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.load('@salesforce/command', 'flags', [
-  'UnknownBuiltinFlagType',
-  'FormattingMessageArrayValue',
-  'FormattingMessageArrayOption',
-  'FormattingMessageDate',
-  'FormattingMessageId',
-  'FormattingMessageUrl',
-  'InvalidFlagTypeError',
-  'jsonFlagLongDescription',
-  'jsonFlagDescription',
-  'InvalidLoggerLevelError',
-  'InvalidApiVersionError',
-  'apiversionFlagDescription',
-  'apiversionFlagLongDescription',
-  'conciseFlagDescription',
-  'conciseFlagLongDescription',
-  'loglevelFlagDescription',
-  'loglevelFlagLongDescription',
-  'quietFlagDescription',
-  'quietFlagLongDescription',
-  'targetdevhubusernameFlagDescription',
-  'targetdevhubusernameFlagLongDescription',
-  'targetusernameFlagDescription',
-  'targetusernameFlagLongDescription',
-  'verboseFlagDescription',
-  'verboseFlagLongDescription',
-  'InvalidFlagName',
-  'InvalidFlagChar',
-  'MissingOrInvalidFlagDescription',
-  'InvalidLongDescriptionFormat',
+  'error.UnknownBuiltinFlagType',
+  'error.FormattingMessageArrayValue',
+  'error.FormattingMessageArrayOption',
+  'error.FormattingMessageDate',
+  'error.FormattingMessageId',
+  'error.FormattingMessageId',
+  'error.InvalidFlagType',
+  'flags.json.description.long',
+  'flags.json.description',
+  'error.InvalidLoggerLevel',
+  'error.InvalidApiVersion',
+  'flags.apiversion.description',
+  'flags.apiversion.description.long',
+  'flags.concise.description',
+  'flags.long.description.long',
+  'flags.loglevel.description',
+  'flags.loglevel.description.long',
+  'flags.quiet.description',
+  'flags.quiet.description.long',
+  'flags.targetdevhubusername.description',
+  'flags.targetdevhubusername.description.long',
+  'flags.targetusername.description',
+  'flags.targetusername.description.long',
+  'flags.verbose.description',
+  'flags.verbose.description.long',
+  'error.InvalidFlagName',
+  'error.InvalidFlagChar',
+  'error.MissingOrInvalidFlagDescription',
+  'error.InvalidLongDescriptionFormat',
 ]);
 
 function validateValue(isValid: boolean, value: string, kind: string, correct?: string): string {
   if (isValid) return value;
-  throw messages.createError('InvalidFlagTypeError', [value, kind, correct || '']);
+  throw messages.createError('error.InvalidFlagType', [value, kind, correct || '']);
 }
 
 function toValidatorFn(validator?: unknown): (val: string) => boolean {
@@ -236,7 +236,7 @@ function validateArrayValues(
     vals.every(toValidatorFn(validator)),
     raw,
     kind,
-    ` ${messages.getMessage('FormattingMessageArrayValue')}`
+    ` ${messages.getMessage('error.FormattingMessageArrayValue')}`
   );
 }
 
@@ -245,7 +245,7 @@ function validateArrayOptions<T>(kind: flags.Kind, raw: string, vals: T[], allow
     allowed.size === 0 || vals.every((t) => allowed.has(t)),
     raw,
     kind,
-    ` ${messages.getMessage('FormattingMessageArrayOption', [Array.from(allowed).toString()])}`
+    ` ${messages.getMessage('error.FormattingMessageArrayOption', [Array.from(allowed).toString()])}`
   );
 }
 
@@ -295,7 +295,7 @@ function buildDate(options: flags.DateTime): flags.Discriminated<flags.DateTime>
   const kind = 'date';
   return option(kind, options, (val: string): Promise<Date> => {
     const parsed = Date.parse(val);
-    validateValue(!isNaN(parsed), val, kind, ` ${messages.getMessage('FormattingMessageDate')}`);
+    validateValue(!isNaN(parsed), val, kind, ` ${messages.getMessage('error.FormattingMessageDate')}`);
     return Promise.resolve(new Date(parsed));
   });
 }
@@ -304,7 +304,7 @@ function buildDatetime(options: flags.DateTime): flags.Discriminated<flags.DateT
   const kind = 'datetime';
   return option(kind, options, (val: string): Promise<Date> => {
     const parsed = Date.parse(val);
-    validateValue(!isNaN(parsed), val, kind, ` ${messages.getMessage('FormattingMessageDate')}`);
+    validateValue(!isNaN(parsed), val, kind, ` ${messages.getMessage('error.FormattingMessageDate')}`);
     return Promise.resolve(new Date(parsed));
   });
 }
@@ -318,7 +318,7 @@ function buildEmail(options: flags.String): flags.Discriminated<flags.String> {
 function buildId(options: flags.String): flags.Discriminated<flags.String> {
   return option('id', options, (val: string): Promise<string> => {
     return Promise.resolve(
-      validateValue(sfdc.validateSalesforceId(val), val, 'id', ` ${messages.getMessage('FormattingMessageId')}`)
+      validateValue(sfdc.validateSalesforceId(val), val, 'id', ` ${messages.getMessage('error.FormattingMessageId')}`)
     );
   });
 }
@@ -366,8 +366,8 @@ function buildUrl(options: flags.Url): flags.Discriminated<flags.Url> {
     try {
       return Promise.resolve(new URL(val));
     } catch (err) {
-      const correct = ` ${messages.getMessage('FormattingMessageUrl')}`;
-      throw messages.createError('InvalidFlagTypeError', [val, 'url', correct || '']);
+      const correct = ` ${messages.getMessage('error.FormattingMessageId')}`;
+      throw messages.createError('error.InvalidFlagType', [val, 'url', correct || '']);
     }
   });
 }
@@ -487,8 +487,8 @@ export const flags = {
 export const requiredBuiltinFlags = {
   json(): flags.Discriminated<flags.Boolean<boolean>> {
     return flags.boolean({
-      description: messages.getMessage('jsonFlagDescription'),
-      longDescription: messages.getMessage('jsonFlagLongDescription'),
+      description: messages.getMessage('flags.json.description'),
+      longDescription: messages.getMessage('flags.json.description.long'),
     });
   },
 
@@ -497,12 +497,12 @@ export const requiredBuiltinFlags = {
       options: Logger.LEVEL_NAMES.concat(Logger.LEVEL_NAMES.map((l) => l.toUpperCase())),
       default: LoggerLevel[Logger.DEFAULT_LEVEL].toLowerCase(),
       required: false,
-      description: messages.getMessage('loglevelFlagDescription'),
-      longDescription: messages.getMessage('loglevelFlagLongDescription'),
+      description: messages.getMessage('flags.loglevel.description'),
+      longDescription: messages.getMessage('flags.loglevel.description.long'),
       parse: (val: string): Promise<string> => {
         val = val.toLowerCase();
         if (Logger.LEVEL_NAMES.includes(val)) return Promise.resolve(val);
-        throw messages.createError('InvalidLoggerLevelError', [val]);
+        throw messages.createError('error.InvalidLoggerLevel', [val]);
       },
     });
   },
@@ -517,11 +517,11 @@ export const optionalBuiltinFlags = {
     return Object.assign(
       opts || {},
       flags.string({
-        description: resolve(opts, 'description', messages.getMessage('apiversionFlagDescription')),
-        longDescription: resolve(opts, 'longDescription', messages.getMessage('apiversionFlagLongDescription')),
+        description: resolve(opts, 'description', messages.getMessage('flags.apiversion.description')),
+        longDescription: resolve(opts, 'longDescription', messages.getMessage('flags.apiversion.description.long')),
         parse: (val: string): Promise<string> => {
           if (sfdc.validateApiVersion(val)) return Promise.resolve(val);
-          throw messages.createError('InvalidApiVersionError', [val]);
+          throw messages.createError('error.InvalidApiVersion', [val]);
         },
       })
     );
@@ -531,8 +531,8 @@ export const optionalBuiltinFlags = {
     return Object.assign(
       opts || {},
       flags.boolean({
-        description: resolve(opts, 'description', messages.getMessage('conciseFlagDescription')),
-        longDescription: resolve(opts, 'longDescription', messages.getMessage('conciseFlagLongDescription')),
+        description: resolve(opts, 'description', messages.getMessage('flags.concise.description')),
+        longDescription: resolve(opts, 'longDescription', messages.getMessage('flags.long.description.long')),
       })
     );
   },
@@ -541,8 +541,8 @@ export const optionalBuiltinFlags = {
     return Object.assign(
       opts || {},
       flags.boolean({
-        description: resolve(opts, 'description', messages.getMessage('quietFlagDescription')),
-        longDescription: resolve(opts, 'longDescription', messages.getMessage('quietFlagLongDescription')),
+        description: resolve(opts, 'description', messages.getMessage('flags.quiet.description')),
+        longDescription: resolve(opts, 'longDescription', messages.getMessage('flags.quiet.description.long')),
       })
     );
   },
@@ -552,11 +552,11 @@ export const optionalBuiltinFlags = {
       opts || {},
       flags.string({
         char: 'v',
-        description: resolve(opts, 'description', messages.getMessage('targetdevhubusernameFlagDescription')),
+        description: resolve(opts, 'description', messages.getMessage('flags.targetdevhubusername.description')),
         longDescription: resolve(
           opts,
           'longDescription',
-          messages.getMessage('targetdevhubusernameFlagLongDescription')
+          messages.getMessage('flags.targetdevhubusername.description.long')
         ),
       })
     );
@@ -567,8 +567,8 @@ export const optionalBuiltinFlags = {
       opts || {},
       flags.string({
         char: 'u',
-        description: resolve(opts, 'description', messages.getMessage('targetusernameFlagDescription')),
-        longDescription: resolve(opts, 'longDescription', messages.getMessage('targetusernameFlagLongDescription')),
+        description: resolve(opts, 'description', messages.getMessage('flags.targetusername.description')),
+        longDescription: resolve(opts, 'longDescription', messages.getMessage('flags.targetusername.description.long')),
       })
     );
   },
@@ -577,8 +577,8 @@ export const optionalBuiltinFlags = {
     return Object.assign(
       opts || {},
       flags.boolean({
-        description: resolve(opts, 'description', messages.getMessage('verboseFlagDescription')),
-        longDescription: resolve(opts, 'longDescription', messages.getMessage('verboseFlagLongDescription')),
+        description: resolve(opts, 'description', messages.getMessage('flags.verbose.description')),
+        longDescription: resolve(opts, 'longDescription', messages.getMessage('flags.verbose.description.long')),
       })
     );
   },
@@ -650,16 +650,16 @@ export type FlagsConfig = {
  */
 function validateCustomFlag<T>(key: string, flag: flags.Any<T>): flags.Any<T> {
   if (!/^(?!(?:[-]|[0-9]*$))[a-z0-9-]+$/.test(key)) {
-    throw messages.createError('InvalidFlagName', [key]);
+    throw messages.createError('error.InvalidFlagName', [key]);
   }
   if (flag.char && (flag.char.length !== 1 || !/[a-zA-Z]/.test(flag.char))) {
-    throw messages.createError('InvalidFlagChar', [key]);
+    throw messages.createError('error.InvalidFlagChar', [key]);
   }
   if (!flag.description || !isString(flag.description)) {
-    throw messages.createError('MissingOrInvalidFlagDescription', [key]);
+    throw messages.createError('error.MissingOrInvalidFlagDescription', [key]);
   }
   if (flag.longDescription !== undefined && !isString(flag.longDescription)) {
-    throw messages.createError('InvalidLongDescriptionFormat', [key]);
+    throw messages.createError('error.InvalidLongDescriptionFormat', [key]);
   }
   return flag;
 }
@@ -699,7 +699,7 @@ export function buildSfdxFlags(
   definiteEntriesOf(flagsConfig).forEach(([key, flag]) => {
     if (isBuiltin(flag)) {
       if (!isKeyOf(optionalBuiltinFlags, key)) {
-        throw messages.createError('UnknownBuiltinFlagType', [key]);
+        throw messages.createError('error.UnknownBuiltinFlagType', [key]);
       }
       output[key] = optionalBuiltinFlags[key](flag);
     } else {

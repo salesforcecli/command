@@ -40,17 +40,20 @@ describe('SfdxFlags', () => {
       containsRequiredFlags(rv);
       expect(rv.targetdevhubusername).to.have.property(
         'description',
-        messages.getMessage('targetdevhubusernameFlagDescription')
+        messages.getMessage('flags.targetdevhubusername.description')
       );
-      expect(rv.apiversion).to.have.property('description', messages.getMessage('apiversionFlagDescription'));
+      expect(rv.apiversion).to.have.property('description', messages.getMessage('flags.apiversion.description'));
     });
 
     it('should add targetusername and apiversion', () => {
       const rv = buildSfdxFlags({}, { targetusername: true });
       expect(Object.keys(rv).length).to.equal(4);
       containsRequiredFlags(rv);
-      expect(rv.targetusername).to.have.property('description', messages.getMessage('targetusernameFlagDescription'));
-      expect(rv.apiversion).to.have.property('description', messages.getMessage('apiversionFlagDescription'));
+      expect(rv.targetusername).to.have.property(
+        'description',
+        messages.getMessage('flags.targetusername.description')
+      );
+      expect(rv.apiversion).to.have.property('description', messages.getMessage('flags.apiversion.description'));
     });
 
     it('should carry forward additional properties on builtins when forced (for legacy toolbelt compatibility)', () => {
@@ -62,7 +65,7 @@ describe('SfdxFlags', () => {
         },
         {}
       );
-      expect(rv.apiversion).to.have.property('description', messages.getMessage('apiversionFlagDescription'));
+      expect(rv.apiversion).to.have.property('description', messages.getMessage('flags.apiversion.description'));
       expect(rv.apiversion).to.have.property('char', 'a');
     });
 
@@ -78,10 +81,10 @@ describe('SfdxFlags', () => {
       );
       expect(Object.keys(rv).length).to.equal(6);
       containsRequiredFlags(rv);
-      expect(rv.concise).to.have.property('description', messages.getMessage('conciseFlagDescription'));
-      expect(rv.verbose).to.have.property('description', messages.getMessage('verboseFlagDescription'));
-      expect(rv.quiet).to.have.property('description', messages.getMessage('quietFlagDescription'));
-      expect(rv.apiversion).to.have.property('description', messages.getMessage('apiversionFlagDescription'));
+      expect(rv.concise).to.have.property('description', messages.getMessage('flags.concise.description'));
+      expect(rv.verbose).to.have.property('description', messages.getMessage('flags.verbose.description'));
+      expect(rv.quiet).to.have.property('description', messages.getMessage('flags.quiet.description'));
+      expect(rv.apiversion).to.have.property('description', messages.getMessage('flags.apiversion.description'));
     });
 
     it('should add oclif type flags', () => {
