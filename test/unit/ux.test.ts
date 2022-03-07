@@ -330,19 +330,6 @@ describe('UX', () => {
       { foo: 'incredible!', bar: 0, baz: false },
       { foo: 'truly amazing!', bar: 9, baz: true },
     ];
-    // const options = {
-    //   columns: [
-    //     { key: 'foo' },
-    //     {
-    //       key: 'bar',
-    //       label: '*** BAR ***',
-    //       // (matches oclif)
-    //       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    //       format: (val: any) => (val != null ? val.toString() : ''),
-    //     },
-    //     { key: 'baz', label: 'ZaB' },
-    //   ],
-    // };
 
     const options: CliUx.Table.table.Columns<Record<string, unknown>> = {
       foo: {},
