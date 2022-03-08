@@ -129,7 +129,7 @@ const withProject = (SfProjectJson?: JsonMap): Plugin<unknown> => {
   };
 };
 
-const test = oclifTest.test
+const test: typeof oclifTest.test = oclifTest.test
   .register('withOrg', withOrg)
   .register('withConnectionRequest', withConnectionRequest)
   .register('withProject', withProject);
