@@ -114,19 +114,23 @@ describe('SfdxFlags', () => {
           myarray: flags.array({ description: 'myarray desc' }),
           mydate: flags.date({ description: 'mydate desc' }),
           mydatetime: flags.datetime({ description: 'mydatetime desc' }),
+          mydirectory: flags.directory({ description: 'mydirectory desc' }),
           myemail: flags.email({ description: 'myemail desc' }),
+          myfilepath: flags.filepath({ description: 'myfilepath desc' }),
           myid: flags.id({ description: 'myid desc' }),
           mynumber: flags.number({ description: 'mynumber desc' }),
           myurl: flags.url({ description: 'myurl desc' }),
         },
         {}
       );
-      expect(Object.keys(rv).length).to.equal(9);
+      expect(Object.keys(rv).length).to.equal(11);
       containsRequiredFlags(rv);
       expect(rv.myarray).to.include({ description: 'myarray desc', kind: 'array' });
       expect(rv.mydate).to.include({ description: 'mydate desc', kind: 'date' });
       expect(rv.mydatetime).to.include({ description: 'mydatetime desc', kind: 'datetime' });
+      expect(rv.mydirectory).to.include({ description: 'mydirectory desc', kind: 'directory' });
       expect(rv.myemail).to.include({ description: 'myemail desc', kind: 'email' });
+      expect(rv.myfilepath).to.include({ description: 'myfilepath desc', kind: 'filepath' });
       expect(rv.myid).to.include({ description: 'myid desc', kind: 'id' });
       expect(rv.mynumber).to.include({ description: 'mynumber desc', kind: 'number' });
       expect(rv.mydate).to.include({ description: 'mydate desc', kind: 'date' });

@@ -177,6 +177,18 @@ function buildHelp(options: flags.BaseBoolean<boolean>): flags.Discriminated<fla
   });
 }
 
+function buildFilepath(options: flags.String): flags.Discriminated<flags.String> {
+  return option('filepath', options, (val: string) => {
+    return Promise.resolve(validateValue(sfdc.validatePathDoesNotContainInvalidChars(val), val, 'filepath'));
+  });
+}
+
+function buildDirectory(options: flags.String): flags.Discriminated<flags.String> {
+  return option('directory', options, (val: string) => {
+    return Promise.resolve(validateValue(sfdc.validatePathDoesNotContainInvalidChars(val), val, 'directory'));
+  });
+}
+
 function validateBounds<T>(
   kind: flags.Kind,
   value: number,
@@ -415,6 +427,20 @@ export const flags = {
    * A flag type for emitting CLI version information. Emits the CLI version and exits the CLI.
    */
   version: buildVersion,
+
+  /**
+   * A flag type for valid file paths. Produces a validated string.
+   *
+   * **See** [@salesforce/core#sfdc.validatePathDoesNotContainInvalidChars](https://forcedotcom.github.io/sfdx-core/globals.html#sfdc), e.g. "this/is/my/path".
+   */
+  filepath: buildFilepath,
+
+  /**
+   * A flag type for valid directory paths. Produces a validated string.
+   *
+   * **See** [@salesforce/core#sfdc.validatePathDoesNotContainInvalidChars](https://forcedotcom.github.io/sfdx-core/globals.html#sfdc), e.g. "this/is/my/path".
+   */
+  directory: buildDirectory,
 
   // sfdx
 
