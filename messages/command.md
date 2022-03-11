@@ -18,7 +18,7 @@ apiVersion configuration overridden at %s
 
 Provide required name=value pairs for the command. Enclose any values that contain spaces in double quotes.
 
-# error.InvalidVarargs
+# error.InvalidVarargsFormat
 
 Setting variables must be in the format <key>=<value> or <key>="<value with spaces>" but found %s.
 
