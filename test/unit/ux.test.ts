@@ -11,13 +11,14 @@ import { env } from '@salesforce/kit';
 import { Dictionary, Optional } from '@salesforce/ts-types';
 import { expect } from 'chai';
 import chalk from 'chalk';
-import cli from 'cli-ux';
+import { CliUx } from '@oclif/core';
 import { UX } from '../../src/ux';
 
 chalk.enabled = false;
 
 // Setup the test environment.
 const $$ = testSetup();
+const cli = CliUx;
 
 describe('UX', () => {
   const sfdxEnv = process.env.SFDX_ENV;
@@ -34,7 +35,7 @@ describe('UX', () => {
 
   it('log() should only log to the logger when output IS NOT enabled', () => {
     const info = $$.SANDBOX.stub($$.TEST_LOGGER, 'info');
-    const log = $$.SANDBOX.stub(cli, 'log');
+    const log = $$.SANDBOX.stub(cli.ux, 'log');
     const ux = new UX($$.TEST_LOGGER, false, cli);
     const logMsg = 'test log() 1 for log wrapper';
 
@@ -53,7 +54,7 @@ describe('UX', () => {
 
     it('log() should not log to stdout when json is set via the process args', () => {
       const info = $$.SANDBOX.stub($$.TEST_LOGGER, 'info');
-      const log = $$.SANDBOX.stub(cli, 'log');
+      const log = $$.SANDBOX.stub(cli.ux, 'log');
       process.argv = ['--json'];
       const ux = new UX($$.TEST_LOGGER, undefined, cli);
       const logMsg = 'test log() 1 for log wrapper';
@@ -67,7 +68,7 @@ describe('UX', () => {
     });
     it('log() should not log to stdout when SFDX_CONTENT_TYPE=JSON', () => {
       const info = $$.SANDBOX.stub($$.TEST_LOGGER, 'info');
-      const log = $$.SANDBOX.stub(cli, 'log');
+      const log = $$.SANDBOX.stub(cli.ux, 'log');
       env.setString('SFDX_CONTENT_TYPE', 'jSON');
       const ux = new UX($$.TEST_LOGGER, undefined, cli);
       const logMsg = 'test log() 1 for log wrapper';
@@ -83,7 +84,7 @@ describe('UX', () => {
 
   it('log() should log to the logger and stdout when output IS enabled', () => {
     const info = $$.SANDBOX.stub($$.TEST_LOGGER, 'info');
-    const log = $$.SANDBOX.stub(cli, 'log');
+    const log = $$.SANDBOX.stub(cli.ux, 'log');
     const ux = new UX($$.TEST_LOGGER, true, cli);
     const logMsg = 'test log() 2 for log wrapper';
 
@@ -100,7 +101,7 @@ describe('UX', () => {
     let retVal: Optional<Record<string, unknown>>;
     const info = $$.SANDBOX.stub($$.TEST_LOGGER, 'info');
     const styledJsonGetter = () => (x: Record<string, unknown>) => (retVal = x);
-    $$.SANDBOX.stub(cli, 'styledJSON').get(styledJsonGetter);
+    $$.SANDBOX.stub(cli.ux, 'styledJSON').get(styledJsonGetter);
     const ux = new UX($$.TEST_LOGGER, true, cli);
     const logMsg = { key1: 'foo', key2: 9, key3: true, key4: [1, 2, 3] };
 
@@ -155,7 +156,7 @@ describe('UX', () => {
 
   it('styledObject() should only log to the logger when output IS NOT enabled', () => {
     const info = $$.SANDBOX.stub($$.TEST_LOGGER, 'info');
-    const styledObject = $$.SANDBOX.stub(cli, 'styledObject');
+    const styledObject = $$.SANDBOX.stub(cli.ux, 'styledObject');
     const ux = new UX($$.TEST_LOGGER, false, cli);
     const logMsg = { key1: 'foo', key2: 9, key3: true, key4: [1, 2, 3] };
 
@@ -169,7 +170,7 @@ describe('UX', () => {
 
   it('styledObject() should log to the logger and stdout when output IS enabled', () => {
     const info = $$.SANDBOX.stub($$.TEST_LOGGER, 'info');
-    const styledObject = $$.SANDBOX.stub(cli, 'styledObject');
+    const styledObject = $$.SANDBOX.stub(cli.ux, 'styledObject');
     const ux = new UX($$.TEST_LOGGER, true, cli);
     const logMsg = { key1: 'foo', key2: 9, key3: true, key4: [1, 2, 3] };
     const keysToLog = ['key1', 'key2', 'key3'];
@@ -188,7 +189,7 @@ describe('UX', () => {
     let retVal: Optional<string>;
     const info = $$.SANDBOX.stub($$.TEST_LOGGER, 'info');
     const styledHeaderGetter = () => (x: string) => (retVal = x);
-    $$.SANDBOX.stub(cli, 'styledHeader').get(styledHeaderGetter);
+    $$.SANDBOX.stub(cli.ux, 'styledHeader').get(styledHeaderGetter);
     const ux = new UX($$.TEST_LOGGER, false, cli);
     const logMsg = 'test styledHeader() 1 for log wrapper';
 
@@ -204,7 +205,7 @@ describe('UX', () => {
     let retVal: Optional<string>;
     const info = $$.SANDBOX.stub($$.TEST_LOGGER, 'info');
     const styledHeaderGetter = () => (x: string) => (retVal = x);
-    $$.SANDBOX.stub(cli, 'styledHeader').get(styledHeaderGetter);
+    $$.SANDBOX.stub(cli.ux, 'styledHeader').get(styledHeaderGetter);
     const ux = new UX($$.TEST_LOGGER, true, cli);
     const logMsg = 'test styledHeader() 2 for log wrapper';
 
@@ -272,7 +273,7 @@ describe('UX', () => {
     let retVal: Optional<Record<string, unknown>>;
     const info = $$.SANDBOX.stub($$.TEST_LOGGER, 'info');
     const tableGetter = () => (x: Record<string, unknown>) => (retVal = x);
-    $$.SANDBOX.stub(cli, 'table').get(tableGetter);
+    $$.SANDBOX.stub(cli.ux, 'table').get(tableGetter);
     const ux = new UX($$.TEST_LOGGER, false, cli);
     const tableData = [
       { foo: 'amazing!', bar: 3, baz: true },
@@ -298,19 +299,17 @@ describe('UX', () => {
       { foo: 'incredible!', bar: 0, baz: false },
       { foo: 'truly amazing!', bar: 9, baz: true },
     ];
-    const expectedOptions = {
-      columns: [
-        { key: 'foo', label: 'FOO' },
-        { key: 'bar', label: 'BAR' },
-        { key: 'baz', label: 'BAZ' },
-        { key: wildKey, label: 'SOME WILD AND CRAZY KEY' },
-      ],
+    const expectedOptions: CliUx.Table.table.Columns<{ foo: unknown }> = {
+      foo: { header: 'FOO' },
+      bar: { header: 'BAR' },
+      baz: { header: 'BAZ' },
+      [wildKey]: { header: 'SOME WILD AND CRAZY KEY' },
     };
     const tableGetter = () => (x: typeof tableData, y: typeof expectedOptions) => {
       retVal.x = x;
       retVal.y = y;
     };
-    $$.SANDBOX.stub(cli, 'table').get(tableGetter);
+    $$.SANDBOX.stub(cli.ux, 'table').get(tableGetter);
     const ux = new UX($$.TEST_LOGGER, true, cli);
     const options = ['foo', 'bar', 'baz', wildKey];
 
@@ -319,7 +318,7 @@ describe('UX', () => {
     expect(info.called).to.equal(true);
     expect(info.firstCall.args[0]).to.equal(tableData);
     expect(retVal.x).to.deep.equal(tableData);
-    expect(retVal.y).to.deep.equal(expectedOptions);
+    expect(retVal.y.columns).to.deep.equal(expectedOptions);
     expect(ux1).to.equal(ux);
   });
 
@@ -331,24 +330,25 @@ describe('UX', () => {
       { foo: 'incredible!', bar: 0, baz: false },
       { foo: 'truly amazing!', bar: 9, baz: true },
     ];
-    const options = {
-      columns: [
-        { key: 'foo' },
-        {
-          key: 'bar',
-          label: '*** BAR ***',
-          // (matches oclif)
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          format: (val: any) => (val != null ? val.toString() : ''),
+
+    const options: CliUx.Table.table.Columns<Record<string, unknown>> = {
+      foo: {},
+      bar: {
+        header: '*** BAR ***',
+        // (matches oclif)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        get(row: any): string {
+          return row != null ? row.toString() : '';
         },
-        { key: 'baz', label: 'ZaB' },
-      ],
+      },
+      baz: { header: 'ZaB' },
     };
+
     const tableGetter = () => (x: typeof tableData, y: typeof options) => {
       retVal.x = x;
       retVal.y = y;
     };
-    $$.SANDBOX.stub(cli, 'table').get(tableGetter);
+    $$.SANDBOX.stub(cli.ux, 'table').get(tableGetter);
     const ux = new UX($$.TEST_LOGGER, true, cli);
 
     const ux1 = ux.table(tableData, options);
@@ -369,7 +369,7 @@ describe('UX', () => {
       expect(options).to.eql({});
       return answer;
     };
-    $$.SANDBOX.stub(cli, 'prompt').get(promptGetter);
+    $$.SANDBOX.stub(cli.ux, 'prompt').get(promptGetter);
     const response = await ux.prompt(question);
     expect(response).to.equal(answer);
   });
@@ -382,7 +382,7 @@ describe('UX', () => {
       expect(msg).to.equal(question);
       return answer;
     };
-    $$.SANDBOX.stub(cli, 'confirm').get(confirmGetter);
+    $$.SANDBOX.stub(cli.ux, 'confirm').get(confirmGetter);
     const response = await ux.confirm(question);
     expect(response).to.equal(answer);
   });
@@ -390,14 +390,14 @@ describe('UX', () => {
   describe('spinner tests', () => {
     it('startSpinner() should call action.start()', () => {
       const ux = new UX($$.TEST_LOGGER, true, cli);
-      const start = $$.SANDBOX.stub(cli.action, 'start');
+      const start = $$.SANDBOX.stub(cli.ux.action, 'start');
       ux.startSpinner('test message');
       expect(start.called).to.equal(true);
     });
 
     it('startSpinner() should call action.start() with all parameters', () => {
       const ux = new UX($$.TEST_LOGGER, true, cli);
-      const start = $$.SANDBOX.stub(cli.action, 'start');
+      const start = $$.SANDBOX.stub(cli.ux.action, 'start');
       ux.startSpinner('test message', 'test status', { stdout: true });
       expect(start.called).to.equal(true);
       expect(start.firstCall.args[0]).to.equal('test message');
@@ -407,41 +407,41 @@ describe('UX', () => {
 
     it("startSpinner() shouldn't call action.start()", () => {
       const ux = new UX($$.TEST_LOGGER, false, cli);
-      const start = $$.SANDBOX.stub(cli.action, 'start');
+      const start = $$.SANDBOX.stub(cli.ux.action, 'start');
       ux.startSpinner('test message');
       expect(start.called).to.equal(false);
     });
 
     it('pauseSpinner() should call action.pause()', () => {
       const ux = new UX($$.TEST_LOGGER, true, cli);
-      const pause = $$.SANDBOX.stub(cli.action, 'pause');
+      const pause = $$.SANDBOX.stub(cli.ux.action, 'pause');
       ux.pauseSpinner(() => {});
       expect(pause.called).to.equal(true);
     });
 
     it("pauseSpinner() shouldn't call action.pause()", () => {
       const ux = new UX($$.TEST_LOGGER, false, cli);
-      const pause = $$.SANDBOX.stub(cli.action, 'pause');
+      const pause = $$.SANDBOX.stub(cli.ux.action, 'pause');
       ux.pauseSpinner(() => {});
       expect(pause.called).to.equal(false);
     });
 
     it('getSpinnerStatus() and setSpinnerStatus() get and set the status on action', () => {
       const ux = new UX($$.TEST_LOGGER, false, cli);
-      ux.cli.action.task = { action: 'spinner', status: 'old status', active: true };
+      ux.cli.ux.action.task = { action: 'spinner', status: 'old status', active: true };
       expect(ux.getSpinnerStatus()).to.equal(undefined);
     });
 
     it('stopSpinner() should call action.stop()', () => {
       const ux = new UX($$.TEST_LOGGER, true, cli);
-      const stop = $$.SANDBOX.stub(cli.action, 'stop');
+      const stop = $$.SANDBOX.stub(cli.ux.action, 'stop');
       ux.stopSpinner('test message');
       expect(stop.called).to.equal(true);
     });
 
     it("stopSpinner() shouldn't call action.stop()", () => {
       const ux = new UX($$.TEST_LOGGER, false, cli);
-      const stop = $$.SANDBOX.stub(cli.action, 'stop');
+      const stop = $$.SANDBOX.stub(cli.ux.action, 'stop');
       ux.stopSpinner('test message');
       expect(stop.called).to.equal(false);
     });

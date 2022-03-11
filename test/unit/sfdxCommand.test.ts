@@ -9,7 +9,6 @@ import { fail } from 'assert';
 import { join } from 'path';
 import { URL } from 'url';
 import * as util from 'util';
-import { IConfig } from '@oclif/config';
 import {
   ConfigAggregator,
   Global,
@@ -19,8 +18,8 @@ import {
   Messages,
   Mode,
   Org,
-  SfdxError,
-  SfdxProject,
+  SfError,
+  SfProject,
 } from '@salesforce/core';
 import { testSetup } from '@salesforce/core/lib/testSetup';
 import { cloneJson, Duration, env, isEmpty } from '@salesforce/kit';
@@ -29,6 +28,7 @@ import { AnyJson, Dictionary, ensureJsonMap, JsonArray, JsonMap, keysOf, Optiona
 import { expect } from 'chai';
 import chalk from 'chalk';
 import { SinonStub } from 'sinon';
+import { Config } from '@oclif/core';
 import { Result, SfdxCommand, SfdxResult } from '../../src/sfdxCommand';
 import { flags, FlagsConfig } from '../../src/sfdxFlags';
 import { UX } from '../../src/ux';
@@ -36,7 +36,7 @@ import { UX } from '../../src/ux';
 chalk.enabled = false;
 
 Messages.importMessagesDirectory(join(__dirname, '..'));
-const messages: Messages = Messages.loadMessages('@salesforce/command', 'flags');
+const messages = Messages.loadMessages('@salesforce/command', 'flags');
 
 const $$ = testSetup();
 
@@ -112,7 +112,6 @@ let jsonToStdout: boolean;
 async function mockStdout(test: (outLines: string[]) => Promise<void>) {
   const oldStdoutWriter = process.stdout.write.bind(process.stdout);
   const lines: string[] = [];
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   process.stdout.write = (message) => {
     if (message && typeof message === 'string') {
@@ -365,7 +364,7 @@ describe('SfdxCommand', () => {
   it('should add a project when requiresProject is true', async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fakeProject: any = 'fake_project';
-    $$.SANDBOX.stub(SfdxProject, 'resolve').withArgs().returns(fakeProject);
+    $$.SANDBOX.stub(SfProject, 'resolve').withArgs().returns(fakeProject);
     class TestCommand extends BaseTestCommand {}
     TestCommand['requiresProject'] = true;
 
@@ -456,7 +455,7 @@ describe('SfdxCommand', () => {
       expect(lines.length).to.be.gte(1);
       // eslint-disable-next-line no-control-regex
       const help = lines[0].slice(0, lines[0].indexOf('\n')).replace(/\u001b\[[0-9]+m/g, '');
-      expect(help).to.equal('USAGE');
+      expect(help).to.equal('Salesforce CLI base command class');
     });
   });
 
@@ -488,7 +487,7 @@ describe('SfdxCommand', () => {
       expect(lines.length).to.be.gte(1);
       // eslint-disable-next-line no-control-regex
       const help = lines[0].slice(0, lines[0].indexOf('\n')).replace(/\u001b\[[0-9]+m/g, '');
-      expect(help).to.equal('USAGE');
+      expect(help).to.equal('Salesforce CLI base command class');
     });
   });
 
@@ -825,7 +824,7 @@ describe('SfdxCommand', () => {
   });
 
   it('should throw when a project is required and the command is not run from within a project', async () => {
-    $$.SANDBOX.stub(SfdxProject, 'resolve').throws('InvalidProjectWorkspace');
+    $$.SANDBOX.stub(SfProject, 'resolve').throws('InvalidProjectWorkspace');
     class TestCommand extends BaseTestCommand {}
     TestCommand['requiresProject'] = true;
 
@@ -951,10 +950,10 @@ describe('SfdxCommand', () => {
   });
 
   it('should only output to ux.logJson when isJson is true and an error occurs', async () => {
-    const sfdxError = new SfdxError('err_msg', 'TestError', ['take action 1'], 100);
-    sfdxError.data = 'here is more data';
-    sfdxError.stack = 'here is the stack';
-    $$.SANDBOX.stub(Org, 'create').throws(sfdxError);
+    const sfError = new SfError('err_msg', 'TestError', ['take action 1'], 100);
+    sfError.data = 'here is more data';
+    sfError.stack = 'here is the stack';
+    $$.SANDBOX.stub(Org, 'create').throws(sfError);
     class TestCommand extends BaseTestCommand {}
     TestCommand['requiresUsername'] = true;
 
@@ -965,14 +964,15 @@ describe('SfdxCommand', () => {
     verifyUXOutput({
       logJson: [
         {
-          actions: sfdxError.actions,
+          actions: sfError.actions,
           commandName: 'TestCommand',
+          context: 'TestCommand',
           data: 'here is more data',
           exitCode: 100,
-          message: sfdxError.message,
-          name: sfdxError.name,
-          result: sfdxError.data,
-          stack: sfdxError.stack,
+          message: sfError.message,
+          name: sfError.name,
+          result: sfError.data,
+          stack: sfError.stack,
           status: 100,
           warnings: [],
         },
@@ -981,10 +981,10 @@ describe('SfdxCommand', () => {
   });
 
   it('should only output to ux.logJson when isJson is true and an error occurs with warning', async () => {
-    const sfdxError = new SfdxError('err_msg', 'TestError', ['take action 1'], 100);
-    sfdxError.data = 'here is more data';
-    sfdxError.stack = 'here is the stack';
-    $$.SANDBOX.stub(Org, 'create').throws(sfdxError);
+    const sfError = new SfError('err_msg', 'TestError', ['take action 1'], 100);
+    sfError.data = 'here is more data';
+    sfError.stack = 'here is the stack';
+    $$.SANDBOX.stub(Org, 'create').throws(sfError);
     class TestCommand extends BaseTestCommand {}
     TestCommand['requiresUsername'] = true;
 
@@ -996,14 +996,15 @@ describe('SfdxCommand', () => {
     verifyUXOutput({
       logJson: [
         {
-          actions: sfdxError.actions,
+          actions: sfError.actions,
           commandName: 'TestCommand',
+          context: 'TestCommand',
           data: 'here is more data',
           exitCode: 100,
-          message: sfdxError.message,
-          name: sfdxError.name,
-          result: sfdxError.data,
-          stack: sfdxError.stack,
+          message: sfError.message,
+          name: sfError.name,
+          result: sfError.data,
+          stack: sfError.stack,
           status: 100,
           warnings: ['DO NOT USE ME...'],
         },
@@ -1116,12 +1117,12 @@ describe('SfdxCommand', () => {
 
   describe('SfdxFlags Custom Attributes', () => {
     const ERR_NEXT_STEPS: Dictionary<string> = {
-      date: ` ${messages.getMessage('FormattingMessageDate')}`,
-      datetime: ` ${messages.getMessage('FormattingMessageDate')}`,
-      id: ` ${messages.getMessage('FormattingMessageId')}`,
-      url: ` ${messages.getMessage('FormattingMessageUrl')}`,
+      date: ` ${messages.getMessage('error.FormattingMessageDate')}`,
+      datetime: ` ${messages.getMessage('error.FormattingMessageDate')}`,
+      id: ` ${messages.getMessage('error.FormattingMessageId')}`,
+      url: ` ${messages.getMessage('error.FormattingMessageId')}`,
     };
-
+    // todo
     async function validateFlag(flagType: keyof typeof flags, val: string, err: boolean) {
       const create = flags[flagType];
       class TestCommand extends BaseTestCommand {
@@ -1133,7 +1134,7 @@ describe('SfdxCommand', () => {
       }
       const output = await TestCommand.run(['--doflag', val]);
       if (err) {
-        const sfdxError = SfdxError.create('@salesforce/command', 'flags', 'InvalidFlagTypeError', [
+        const sfError = messages.createError('error.InvalidFlagType', [
           val,
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore kind doesn't exist
@@ -1143,21 +1144,13 @@ describe('SfdxCommand', () => {
         expect(output).to.equal(undefined);
         expect(process.exitCode).to.equal(1);
         verifyUXOutput({
-          error: [['ERROR running TestCommand: ', sfdxError.message]],
+          error: [['ERROR running TestCommand: ', sfError.message]],
         });
       } else {
         expect(output).to.equal(TestCommand.output);
         verifyUXOutput();
       }
     }
-
-    it('should validate filepath flag type for valid path', async () => {
-      return validateFlag('filepath', '/my/path/to/file.txt', false);
-    });
-
-    it('should validate directory flag type for invalid path', async () => {
-      return validateFlag('directory', '/my/path/to/??file.txt', true);
-    });
 
     it('should validate date flag type for invalid date', async () => {
       return validateFlag('date', 'this is a date', true);
@@ -1220,11 +1213,11 @@ describe('SfdxCommand', () => {
     });
 
     function validateFlagAttributes(output: unknown, errName: string, flagName: string) {
-      const sfdxError = SfdxError.create('@salesforce/command', 'flags', errName, [flagName]);
+      const sfError = messages.createError(errName, [flagName]);
       expect(output).to.equal(undefined);
       expect(process.exitCode).to.equal(1);
       verifyUXOutput({
-        error: [['ERROR running TestCommand: ', sfdxError.message]],
+        error: [['ERROR running TestCommand: ', sfError.message]],
       });
     }
 
@@ -1241,7 +1234,7 @@ describe('SfdxCommand', () => {
       };
 
       const output = await TestCommand.run(['--myflag', 'input']);
-      validateFlagAttributes(output, 'InvalidLongDescriptionFormat', 'myflag');
+      validateFlagAttributes(output, 'error.InvalidLongDescriptionFormat', 'myflag');
     });
 
     it('should validate description is defined', async () => {
@@ -1252,7 +1245,7 @@ describe('SfdxCommand', () => {
         myflag: flags.string({ char: 'm' }),
       };
       const output = await TestCommand.run(['--myflag', 'input']);
-      validateFlagAttributes(output, 'MissingOrInvalidFlagDescription', 'myflag');
+      validateFlagAttributes(output, 'error.MissingOrInvalidFlagDescription', 'myflag');
     });
 
     it('should validate char length is one', async () => {
@@ -1266,7 +1259,7 @@ describe('SfdxCommand', () => {
         }),
       };
       const output = await TestCommand.run(['--myflag', 'input']);
-      validateFlagAttributes(output, 'InvalidFlagChar', 'myflag');
+      validateFlagAttributes(output, 'error.InvalidFlagChar', 'myflag');
     });
 
     it('should validate char is alphabetical', async () => {
@@ -1277,7 +1270,7 @@ describe('SfdxCommand', () => {
         myflag: flags.string({ char: '5', description: 'bar' }),
       };
       const output = await TestCommand.run(['--myflag', 'input']);
-      validateFlagAttributes(output, 'InvalidFlagChar', 'myflag');
+      validateFlagAttributes(output, 'error.InvalidFlagChar', 'myflag');
     });
 
     it('should validate flag name is all lowercase', async () => {
@@ -1289,7 +1282,7 @@ describe('SfdxCommand', () => {
         },
       };
       const output = await TestCommand.run(['--myFlag', 'input']);
-      validateFlagAttributes(output, 'InvalidFlagName', 'myFlag');
+      validateFlagAttributes(output, 'error.InvalidFlagName', 'myFlag');
     });
 
     it('should validate flag name is all lowercase for oclif type flags', async () => {
@@ -1301,7 +1294,7 @@ describe('SfdxCommand', () => {
         }),
       };
       const output = await TestCommand.run(['--myFlag', 'input']);
-      validateFlagAttributes(output, 'InvalidFlagName', 'myFlag');
+      validateFlagAttributes(output, 'error.InvalidFlagName', 'myFlag');
     });
 
     it('should validate that undefined is not a valid flag type value', async () => {
@@ -1330,12 +1323,13 @@ describe('SfdxCommand', () => {
       let inputs: Dictionary<any> = {};
 
       class FlagsTestCommand extends BaseTestCommand {
-        public static flagsConfig: FlagsConfig = {
+        public static readonly flagsConfig: FlagsConfig = {
           // oclif
           boolean: flags.boolean({ description: 'boolean' }),
           enum: flags.enum({ description: 'enum', options: ['e', 'f'] }),
           help: flags.help({ char: 'h' }),
           integer: flags.integer({ description: 'integer' }),
+          // @ts-ignore
           option: flags.option({ description: 'custom', parse: (val: string) => val.toUpperCase() }),
           string: flags.string({ description: 'string' }),
           version: flags.version(),
@@ -1351,9 +1345,7 @@ describe('SfdxCommand', () => {
           }),
           date: flags.date({ description: 'date' }),
           datetime: flags.datetime({ description: 'datetime' }),
-          directory: flags.directory({ description: 'directory' }),
           email: flags.email({ description: 'some email' }),
-          filepath: flags.filepath({ description: 'filepath' }),
           id: flags.id({ description: 'id' }),
           milliseconds: flags.milliseconds({ description: 'milliseconds' }),
           minutes: flags.minutes({ description: 'minutes' }),
@@ -1372,46 +1364,48 @@ describe('SfdxCommand', () => {
         public static supportsDevhubUsername = true;
 
         public async run() {
-          await super.run();
+          await super.init();
           inputs = this.flags;
           return this.statics.output;
         }
       }
+      const f = new FlagsTestCommand(
+        [
+          // oclif
+          '--boolean',
+          '--enum=e',
+          // --help exits, so skip it in this test
+          '--integer=10',
+          '--option=o',
+          '--string=s',
+          // --version exits, so skip it in this test
 
-      await FlagsTestCommand.run([
-        // oclif
-        '--boolean',
-        '--enum=e',
-        // --help exits, so skip it in this test
-        '--integer=10',
-        '--option=o',
-        '--string=s',
-        // --version exits, so skip it in this test
+          // sfdx
+          '--array=1,2,3',
+          '--optsarray=1,3,5',
+          '--intarray=1,2,3',
+          '--optsintarray=1,3,5',
+          '--date=01-02-2000 GMT',
+          '--datetime=01/02/2000 01:02:34 GMT',
+          '--email=bill@thecat.org',
+          '--id=00Dxxxxxxxxxxxx',
+          '--milliseconds=5000',
+          '--minutes=2',
+          '--number=0xdeadbeef',
+          '--seconds=5',
+          '--url=http://example.com/foo/bar',
 
-        // sfdx
-        '--array=1,2,3',
-        '--optsarray=1,3,5',
-        '--intarray=1,2,3',
-        '--optsintarray=1,3,5',
-        '--date=01-02-2000 GMT',
-        '--datetime=01/02/2000 01:02:34 GMT',
-        '--email=bill@thecat.org',
-        '--filepath=/home/someone/.config',
-        '--id=00Dxxxxxxxxxxxx',
-        '--milliseconds=5000',
-        '--minutes=2',
-        '--number=0xdeadbeef',
-        '--seconds=5',
-        '--url=http://example.com/foo/bar',
-
-        // builtins
-        '--apiversion=42.0',
-        '--concise',
-        '--quiet',
-        '--verbose',
-        '--targetdevhubusername=foo',
-        '--targetusername=bar',
-      ]);
+          // builtins
+          '--apiversion=42.0',
+          '--concise',
+          '--quiet',
+          '--verbose',
+          '--targetdevhubusername=foo',
+          '--targetusername=bar',
+        ],
+        Config.prototype
+      );
+      await f.run();
 
       expect(inputs.boolean).to.be.true;
       expect(inputs.enum).to.equal('e');
@@ -1426,7 +1420,6 @@ describe('SfdxCommand', () => {
       expect(inputs.date.toISOString()).to.equal('2000-01-02T00:00:00.000Z');
       expect(inputs.datetime.toISOString()).to.equal('2000-01-02T01:02:34.000Z');
       expect(inputs.email).to.equal('bill@thecat.org');
-      expect(inputs.filepath).to.equal('/home/someone/.config');
       expect(inputs.id).to.equal('00Dxxxxxxxxxxxx');
       expect(inputs.milliseconds).to.deep.equal(Duration.milliseconds(5000));
       expect(inputs.minutes).to.deep.equal(Duration.minutes(2));
@@ -1457,6 +1450,26 @@ describe('SfdxCommand', () => {
     expect(logJson.length, 'logJson did not get called with error json').to.equal(1);
     const json = ensureJsonMap(logJson[0]);
     expect(json.message, 'logJson did not get called with the right error').to.contains('Ahhh!');
+    expect(UX_OUTPUT['errorJson'].length, 'errorJson got called when it should not have').to.equal(0);
+  });
+
+  it('should remove "Error" from the end of errors if present', async () => {
+    // Run the command
+    class StderrCommand extends SfdxCommand {
+      public async run() {
+        throw new SfError('Ahhhh!', 'ahhhhAnError');
+      }
+    }
+    const output = await StderrCommand.run(['--json']);
+    expect(output).to.equal(undefined);
+    expect(process.exitCode).to.equal(1);
+
+    const logJson = UX_OUTPUT['logJson'];
+    expect(logJson.length, 'logJson did not get called with error json').to.equal(1);
+    const json = ensureJsonMap(logJson[0]);
+    expect(json.message, 'logJson did not get called with the right error').to.contains('Ahhhh!');
+    // 'ahhhhAnError' -> 'ahhhhAn'
+    expect(json.name).to.equal('ahhhhAn');
     expect(UX_OUTPUT['errorJson'].length, 'errorJson got called when it should not have').to.equal(0);
   });
 
@@ -1549,7 +1562,7 @@ describe('SfdxCommand', () => {
 
 describe('format', () => {
   class TestCommand extends BaseTestCommand {
-    public format(error: SfdxError) {
+    public format(error: SfError) {
       return this.formatError(error);
     }
   }
@@ -1561,13 +1574,14 @@ describe('format', () => {
     const message = "it's a trap!";
     const name = 'BadError';
 
-    const sfdxError = new SfdxError(message, name);
-    sfdxError.stack = 'stack for BadError';
+    const sfError = new SfError(message, name);
+    sfError.stack = 'stack for BadError';
 
     const expectedFormat = ['ERROR: ', message];
 
-    const config = stubInterface<IConfig>($$.SANDBOX);
-    expect(new TestCommand([], config).format(sfdxError)).to.deep.equal(expectedFormat);
+    const config = stubInterface<FlagsConfig>($$.SANDBOX);
+    // @ts-ignore
+    expect(new TestCommand([], config).format(sfError)).to.deep.equal(expectedFormat);
   });
 
   it('should return expected formatting with a commandName set', () => {
@@ -1578,14 +1592,15 @@ describe('format', () => {
     const name = 'BadError';
     const commandName = 'TestCommand1';
 
-    const sfdxError = new SfdxError(message, name);
-    sfdxError.stack = 'stack for BadError';
-    sfdxError.setCommandName(commandName);
+    const sfError = new SfError(message, name);
+    sfError.stack = 'stack for BadError';
+    sfError.setContext(commandName);
 
     const expectedFormat = [`ERROR running ${commandName}: `, message];
 
-    const config = stubInterface<IConfig>($$.SANDBOX);
-    expect(new TestCommand([], config).format(sfdxError)).to.deep.equal(expectedFormat);
+    const config = stubInterface<Config>($$.SANDBOX);
+    // @ts-ignore
+    expect(new TestCommand([], config).format(sfError)).to.deep.equal(expectedFormat);
   });
 
   it('should return expected formatting with actions', () => {
@@ -1596,13 +1611,14 @@ describe('format', () => {
     const name = 'BadError';
     const actions = ['take action 1', 'take action 2'];
 
-    const sfdxError = new SfdxError(message, name, actions);
-    sfdxError.stack = 'stack for BadError';
+    const sfError = new SfError(message, name, actions);
+    sfError.stack = 'stack for BadError';
 
     const expectedFormat = ['ERROR: ', message, '\n\nTry this:', `\n${actions[0]}`, `\n${actions[1]}`];
 
-    const config = stubInterface<IConfig>($$.SANDBOX);
-    expect(new TestCommand([], config).format(sfdxError)).to.deep.equal(expectedFormat);
+    const config = stubInterface<FlagsConfig>($$.SANDBOX);
+    // @ts-ignore
+    expect(new TestCommand([], config).format(sfError)).to.deep.equal(expectedFormat);
   });
 
   it('should return expected formatting with stack trace (in dev mode)', () => {
@@ -1612,14 +1628,15 @@ describe('format', () => {
     const message = "it's a trap!";
     const name = 'BadError';
 
-    const sfdxError = new SfdxError(message, name);
-    sfdxError.stack = 'stack for BadError';
+    const sfError = new SfError(message, name);
+    sfError.stack = 'stack for BadError';
 
-    const stackMsg = `\n*** Internal Diagnostic ***\n\n${sfdxError.stack}\n******\n`;
+    const stackMsg = `\n*** Internal Diagnostic ***\n\n${sfError.stack}\n******\n`;
     const expectedFormat = ['ERROR: ', message, stackMsg];
 
-    const config = stubInterface<IConfig>($$.SANDBOX);
-    expect(new TestCommand([], config).format(sfdxError)).to.deep.equal(expectedFormat);
+    const config = stubInterface<FlagsConfig>($$.SANDBOX);
+    // @ts-ignore
+    expect(new TestCommand([], config).format(sfError)).to.deep.equal(expectedFormat);
   });
 
   it('should return generate usage by default', () => {

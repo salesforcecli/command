@@ -9,7 +9,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable no-console */
 import { env } from '@salesforce/kit';
-import { ensure } from '@salesforce/ts-types';
+import { ensure, has, isArray, isBoolean, isString, Optional } from '@salesforce/ts-types';
 
 /**
  * A table option configuration type that can be the TableOptions as defined by
@@ -19,7 +19,6 @@ import { ensure } from '@salesforce/ts-types';
  * @typedef {object} SfdxTableOptions
  * @property {TableOptions | string[]} options
  */
-
 /**
  * A prompt option configuration as defined by
  * [oclif/cli-ux](https://github.com/oclif/cli-ux/blob/master/src/prompt.ts).
@@ -28,7 +27,6 @@ import { ensure } from '@salesforce/ts-types';
  * @property {string} prompt The prompt string displayed to the user.
  * @property {'normal' | 'mask' | 'hide'} type `Normal` does not hide the user input, `mask` hides the user input after the user presses `ENTER`, and `hide` hides the user input as it is being typed.
  */
-
 /**
  * An action option configuration as defined by
  * [oclif/cli-ux](https://github.com/oclif/cli-ux/blob/master/src/action/base.ts).
@@ -36,13 +34,11 @@ import { ensure } from '@salesforce/ts-types';
  * @typedef {object} OclifActionOptions
  * @property {boolean} stdout The option to display to stdout or not.
  */
-
 import { Logger, LoggerLevel } from '@salesforce/core';
-import { has, isArray, isBoolean, isString, Optional } from '@salesforce/ts-types';
 import chalk from 'chalk';
-import { cli, IPromptOptions } from 'cli-ux';
-import { Options as OclifActionOptions } from 'cli-ux/lib/action/base';
-import { TableColumn, TableOptions as OclifTableOptions } from 'cli-ux/lib/styled/table';
+import { CliUx } from '@oclif/core';
+import { Options as OclifActionOptions } from '@oclif/core/lib/cli-ux/action/base';
+import { IPromptOptions } from '@oclif/core/lib/cli-ux';
 
 /**
  * Utilities for interacting with terminal I/O.
@@ -55,14 +51,14 @@ export class UX {
    */
   public static warnings: Set<string> = new Set<string>();
 
-  public cli: typeof cli;
+  public cli: typeof CliUx;
   private isOutputEnabled: boolean;
 
   /**
    * Do not directly construct instances of this class -- use {@link UX.create} instead.
    */
-  public constructor(private logger: Logger, isOutputEnabled?: boolean, ux?: typeof cli) {
-    this.cli = ux || cli;
+  public constructor(private logger: Logger, isOutputEnabled?: boolean, ux?: typeof CliUx) {
+    this.cli = ux || CliUx;
 
     if (isBoolean(isOutputEnabled)) {
       this.isOutputEnabled = isOutputEnabled;
@@ -115,7 +111,7 @@ export class UX {
    */
   public log(...args: string[]): UX {
     if (this.isOutputEnabled) {
-      this.cli.log(...args);
+      this.cli.ux.log(...args);
     }
 
     // log to sfdx.log after the console as log filtering mutates the args.
@@ -131,8 +127,8 @@ export class UX {
    * @returns {UX}
    * @throws {TypeError} If the object is not JSON-serializable.
    */
-  public logJson(obj: object): UX {
-    this.cli.styledJSON(obj);
+  public logJson(obj: Record<string, unknown>): UX {
+    this.cli.ux.styledJSON(obj);
 
     // log to sfdx.log after the console as log filtering mutates the args.
     this.logger.info(obj);
@@ -148,7 +144,7 @@ export class UX {
    * @returns {Promise<string>} The user input to the prompt.
    */
   public async prompt(name: string, options: IPromptOptions = {}): Promise<string> {
-    return this.cli.prompt(name, options);
+    return this.cli.ux.prompt(name, options);
   }
 
   /**
@@ -158,7 +154,7 @@ export class UX {
    * @returns {Promise<boolean>} Returns `true` if the user inputs 'y' or 'yes', and `false` if the user inputs 'n' or 'no'.
    */
   public async confirm(message: string): Promise<boolean> {
-    return this.cli.confirm(message);
+    return this.cli.ux.confirm(message);
   }
 
   /**
@@ -170,7 +166,7 @@ export class UX {
    */
   public startSpinner(message: string, status?: string, opts: OclifActionOptions = {}): void {
     if (this.isOutputEnabled) {
-      this.cli.action.start(message, status, opts);
+      this.cli.ux.action.start(message, status, opts);
     }
   }
 
@@ -183,7 +179,7 @@ export class UX {
    */
   public pauseSpinner<T>(fn: () => T, icon?: string): Optional<T> {
     if (this.isOutputEnabled) {
-      return this.cli.action.pause(fn, icon);
+      return this.cli.ux.action.pause(fn, icon);
     }
   }
 
@@ -194,7 +190,7 @@ export class UX {
    */
   public setSpinnerStatus(status?: string): void {
     if (this.isOutputEnabled) {
-      this.cli.action.status = status;
+      this.cli.ux.action.status = status;
     }
   }
 
@@ -205,7 +201,7 @@ export class UX {
    */
   public getSpinnerStatus(): Optional<string> {
     if (this.isOutputEnabled) {
-      return this.cli.action.status;
+      return this.cli.ux.action.status;
     }
   }
 
@@ -216,7 +212,7 @@ export class UX {
    */
   public stopSpinner(message?: string): void {
     if (this.isOutputEnabled) {
-      this.cli.action.stop(message);
+      this.cli.ux.action.stop(message);
     }
   }
 
@@ -292,19 +288,18 @@ export class UX {
     if (this.isOutputEnabled) {
       // This is either an array of column names or an already built Partial<OclifTableOptions>
       if (isArray(options)) {
-        const tableColumns: Array<Partial<TableColumn>> = [];
+        const tableColumns: Partial<CliUx.Table.table.Columns<Record<string, unknown>>> = {};
         for (const col of options) {
-          tableColumns.push({
-            key: col,
-            label: col
+          tableColumns[col] = {
+            header: col
               .split(/(?=[A-Z])|[-_\s]/)
-              .map((w) => w.toUpperCase())
+              .map((w: string) => w.toUpperCase())
               .join(' '),
-          });
+          };
         }
-        this.cli.table(rows, { columns: tableColumns });
+        this.cli.ux.table(rows, { columns: tableColumns });
       } else {
-        this.cli.table(rows, options);
+        this.cli.ux.table(rows, options);
       }
     }
 
@@ -325,7 +320,7 @@ export class UX {
   public styledObject(obj: object, keys?: string[]): UX {
     this.logger.info(obj);
     if (this.isOutputEnabled) {
-      this.cli.styledObject(obj, keys);
+      this.cli.ux.styledObject(obj, keys);
     }
     return this;
   }
@@ -340,7 +335,7 @@ export class UX {
   public styledJSON(obj: object): UX {
     this.logger.info(obj);
     if (this.isOutputEnabled) {
-      this.cli.styledJSON(obj);
+      this.cli.ux.styledJSON(obj);
     }
     return this;
   }
@@ -355,7 +350,7 @@ export class UX {
   public styledHeader(header: string): UX {
     this.logger.info(header);
     if (this.isOutputEnabled) {
-      this.cli.styledHeader(header);
+      this.cli.ux.styledHeader(header);
     }
     return this;
   }
@@ -366,7 +361,7 @@ export class UX {
  * more simply just a string array in the simple cases where table header values
  * are the only desired config option.
  */
-export type TableOptions = Partial<OclifTableOptions> | string[];
+export type TableOptions = Partial<CliUx.Table.table.Options> | string[];
 
 /**
  * A deprecation configuration type.  A typical instance can pass `name`,

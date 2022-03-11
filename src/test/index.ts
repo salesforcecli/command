@@ -7,7 +7,8 @@
 import { Plugin } from 'fancy-test/lib/types';
 import * as oclifTest from '@oclif/test';
 import { command, Config, expect, FancyTypes } from '@oclif/test';
-import { AuthFields, SfdxProject } from '@salesforce/core';
+import { Config as OclifConfig } from '@oclif/core';
+import { AuthFields, SfProject } from '@salesforce/core';
 import { TestContext, testSetup } from '@salesforce/core/lib/testSetup';
 import {
   AnyJson,
@@ -20,8 +21,6 @@ import {
   Optional,
 } from '@salesforce/ts-types';
 
-// Need to prevent typescript error
-import * as IConfig from '@oclif/config/lib/config';
 import { loadConfig } from '@oclif/test/lib/load-config';
 import { SinonStub } from 'sinon';
 
@@ -63,13 +62,12 @@ const withOrg = (org: Partial<AuthFields> = {}, setAsDefault = true): Plugin<Dic
       // eslint-disable-next-line @typescript-eslint/require-await
       const readOrg = async function (this: { path: string }): Promise<JsonMap> {
         const path = this.path;
-        const foundOrg = asJsonMap(
+        return asJsonMap(
           find(ctx.orgs, (val) => {
             return path.includes(ensureString(val.username));
           }),
           {}
         );
-        return foundOrg;
       };
       // eslint-disable-next-line @typescript-eslint/require-await
       const writeOrg = async function (this: { path: string }): Promise<JsonMap> {
@@ -109,33 +107,33 @@ const withConnectionRequest = (
   };
 };
 
-const withProject = (sfdxProjectJson?: JsonMap): Plugin<unknown> => {
+const withProject = (SfProjectJson?: JsonMap): Plugin<unknown> => {
   return {
     run(): void {
       // Restore first if already stubbed by $$.inProject()
       /* eslint-disable-next-line @typescript-eslint/unbound-method */
-      const projPathStub = SfdxProject.resolveProjectPath as SinonStub;
+      const projPathStub = SfProject.resolveProjectPath as SinonStub;
       if (projPathStub.restore) {
         projPathStub.restore();
       }
-      $$.SANDBOX.stub(SfdxProject, 'resolveProjectPath').callsFake((path: string | undefined) => {
+      $$.SANDBOX.stub(SfProject, 'resolveProjectPath').callsFake((path: string | undefined) => {
         return $$.localPathRetriever(path || $$.id);
       });
       const DEFAULT_PROJECT_JSON = {
         sfdcLoginUrl: 'https://login.salesforce.com',
       };
-      $$.configStubs.SfdxProjectJson = {
-        contents: Object.assign({}, DEFAULT_PROJECT_JSON, sfdxProjectJson),
+      $$.configStubs.SfProjectJson = {
+        contents: Object.assign({}, DEFAULT_PROJECT_JSON, SfProjectJson),
       };
     },
   };
 };
 
-const test = oclifTest.test
+const test: typeof oclifTest.test = oclifTest.test
   .register('withOrg', withOrg)
   .register('withConnectionRequest', withConnectionRequest)
   .register('withProject', withProject);
 
 export default test;
 
-export { expect, FancyTypes, Config, command, loadConfig, IConfig, test, $$, TestContext };
+export { expect, FancyTypes, Config, command, loadConfig, OclifConfig, test, $$, TestContext };
