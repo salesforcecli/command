@@ -19,7 +19,7 @@ const messages = Messages.load('@salesforce/command', 'command', [
   'error.RequiresProject',
   'error.RequiresUsername',
   'warning.ApiVersionOverride',
-  'error.InvalidVarargs',
+  'error.InvalidVarargsFormat',
   'error.DuplicateVarargs',
   'error.VarargsRequired',
   'error.RequiresDevhubUsername',
@@ -476,7 +476,7 @@ export abstract class SfdxCommand extends Command {
       const split = arg.split('=');
 
       if (split.length !== 2) {
-        throw messages.createError('error.InvalidVarargs', [arg]);
+        throw messages.createError('error.InvalidVarargsFormat', [arg]);
       }
 
       const [name, value] = split;
