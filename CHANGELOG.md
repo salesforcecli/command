@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.0.1](https://github.com/salesforcecli/command/compare/v5.0.0...v5.0.1) (2022-03-16)
+
+
+### Bug Fixes
+
+* understand messages.createError ([9a64626](https://github.com/salesforcecli/command/commit/9a646266b2b95ac7c13e216fdb0739b27b30487a))
+
 ## [5.0.0](https://github.com/salesforcecli/command/compare/v4.2.2...v5.0.0) (2022-03-11)
 
 ### [4.2.2](https://github.com/salesforcecli/command/compare/v4.2.1...v4.2.2) (2022-01-25)
