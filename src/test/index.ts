@@ -10,16 +10,7 @@ import { command, Config, expect, FancyTypes } from '@oclif/test';
 import { Config as OclifConfig } from '@oclif/core';
 import { AuthFields, SfProject } from '@salesforce/core';
 import { TestContext, testSetup } from '@salesforce/core/lib/testSetup';
-import {
-  AnyJson,
-  asJsonMap,
-  definiteValuesOf,
-  Dictionary,
-  ensure,
-  ensureString,
-  JsonMap,
-  Optional,
-} from '@salesforce/ts-types';
+import { AnyJson, asJsonMap, definiteValuesOf, Dictionary, ensure, JsonMap, Optional } from '@salesforce/ts-types';
 
 import { loadConfig } from '@oclif/test/lib/load-config';
 import { SinonStub } from 'sinon';
@@ -44,44 +35,34 @@ const withOrg = (org: Partial<AuthFields> = {}, setAsDefault = true): Plugin<Dic
       if (!org.username) {
         org.username = 'test@org.com';
       }
+      ctx.orgs[org.username] = {};
 
       // Override org if it exists on context
-      ctx.orgs[org.username] = Object.assign(
-        {
-          orgId: '0x012123',
-          instanceUrl: 'http://na30.salesforce.com',
-          loginUrl: 'https://login.salesforce.com',
-          created: '1519163543003',
-          isDevHub: false,
-        },
-        org
-      );
-
-      ctx.orgs[org.username].default = setAsDefault;
+      ctx.orgs[org.username].orgs = {
+        [org.username]: Object.assign(
+          {
+            orgId: '0x012123',
+            instanceUrl: 'http://na30.salesforce.com',
+            loginUrl: 'https://login.salesforce.com',
+            created: '1519163543003',
+            isDevHub: false,
+            default: setAsDefault,
+          },
+          org
+        ),
+      };
 
       // eslint-disable-next-line @typescript-eslint/require-await
       const readOrg = async function (this: { path: string }): Promise<JsonMap> {
-        const path = this.path;
-        return asJsonMap(
-          find(ctx.orgs, (val) => {
-            return path.includes(ensureString(val.username));
-          }),
-          {}
-        );
+        return asJsonMap(ctx.orgs[org.username as string], {});
       };
       // eslint-disable-next-line @typescript-eslint/require-await
       const writeOrg = async function (this: { path: string }): Promise<JsonMap> {
-        const path = this.path;
-        const foundOrg = asJsonMap(
-          find(ctx.orgs, (val) => {
-            return path.includes(ensureString(val.username));
-          }),
-          {}
-        );
-        return (ensure($$.configStubs.AuthInfoConfig).contents = foundOrg);
+        const foundOrg = asJsonMap(ctx.orgs[org.username as string], {});
+        return (ensure($$.configStubs.GlobalInfo).contents = { orgs: { [org.username as string]: foundOrg } });
       };
 
-      $$.configStubs.AuthInfoConfig = {
+      $$.configStubs.GlobalInfo = {
         retrieveContents: readOrg,
         updateContents: writeOrg,
       };
@@ -129,7 +110,7 @@ const withProject = (SfProjectJson?: JsonMap): Plugin<unknown> => {
   };
 };
 
-const test: typeof oclifTest.test = oclifTest.test
+const test = oclifTest.test
   .register('withOrg', withOrg)
   .register('withConnectionRequest', withConnectionRequest)
   .register('withProject', withProject);
