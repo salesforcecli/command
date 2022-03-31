@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.0.3](https://github.com/salesforcecli/command/compare/v5.0.2...v5.0.3) (2022-03-31)
+
+
+### Bug Fixes
+
+* no-truncate:true on tables, matches previous behavior ([d296dfc](https://github.com/salesforcecli/command/commit/d296dfc94bea4a2e07d2c74d405eb6f9964c43f5))
+
 ### [5.0.2](https://github.com/salesforcecli/command/compare/v5.0.1...v5.0.2) (2022-03-29)
 
 
