@@ -279,17 +279,23 @@ export class UX {
    * stream output is enabled.
    *
    * @param {object[]} rows The rows of data to be output in table format.
+   * @param columns Table column options
    * @param {SfdxTableOptions} options The {@link SfdxTableOptions} to use for formatting.
    * @returns {UX}
    */
-  // (allow any because matches oclif)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public table(rows: any[], options: TableOptions = {}): UX {
+
+  public table(
+    // (allow any because matches oclif)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rows: any[],
+    columns: TableColumns = {},
+    options: CliUx.Table.table.Options = { 'no-truncate': true }
+  ): UX {
     if (this.isOutputEnabled) {
       // This is either an array of column names or an already built Partial<OclifTableOptions>
-      if (isArray(options)) {
+      if (isArray(columns)) {
         const tableColumns: Partial<CliUx.Table.table.Columns<Record<string, unknown>>> = {};
-        for (const col of options) {
+        for (const col of columns) {
           tableColumns[col] = {
             header: col
               .split(/(?=[A-Z])|[-_\s]/)
@@ -297,9 +303,9 @@ export class UX {
               .join(' '),
           };
         }
-        this.cli.ux.table(rows, { columns: tableColumns });
+        this.cli.ux.table(rows, { columns: tableColumns }, options);
       } else {
-        this.cli.ux.table(rows, options);
+        this.cli.ux.table(rows, columns, options);
       }
     }
 
@@ -361,7 +367,9 @@ export class UX {
  * more simply just a string array in the simple cases where table header values
  * are the only desired config option.
  */
-export type TableOptions = Partial<CliUx.Table.table.Options> | string[];
+// (allow any because matches oclif)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type TableColumns = CliUx.Table.table.Columns<any> | string[];
 
 /**
  * A deprecation configuration type.  A typical instance can pass `name`,

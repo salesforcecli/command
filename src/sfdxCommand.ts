@@ -12,7 +12,7 @@ import chalk from 'chalk';
 import { OutputArgs, OutputFlags } from '@oclif/core/lib/interfaces';
 import { DocOpts } from './docOpts';
 import { buildSfdxFlags, flags as Flags, FlagsConfig } from './sfdxFlags';
-import { Deprecation, DeprecationDefinition, TableOptions, UX } from './ux';
+import { Deprecation, DeprecationDefinition, TableColumns, UX } from './ux';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.load('@salesforce/command', 'command', [
@@ -27,7 +27,7 @@ const messages = Messages.load('@salesforce/command', 'command', [
 
 export interface SfdxResult {
   data?: AnyJson;
-  tableColumnData?: TableOptions;
+  tableColumnData?: TableColumns;
   display?: (this: Result) => void;
 }
 
@@ -39,7 +39,7 @@ export interface SfdxResult {
  */
 export class Result implements SfdxResult {
   public data!: AnyJson; // assigned in SfdxCommand._run
-  public tableColumnData?: TableOptions;
+  public tableColumnData?: TableColumns;
   public ux!: UX; // assigned in SfdxCommand.init
 
   public constructor(config: SfdxResult = {}) {

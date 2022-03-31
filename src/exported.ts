@@ -7,6 +7,6 @@
 
 import { Result, SfdxCommand, SfdxResult } from './sfdxCommand';
 import { flags, FlagsConfig } from './sfdxFlags';
-import { TableOptions, UX } from './ux';
+import { TableColumns, UX } from './ux';
 
-export { Result, SfdxCommand, SfdxResult, FlagsConfig, flags, TableOptions, UX };
+export { Result, SfdxCommand, SfdxResult, FlagsConfig, flags, TableColumns, UX };
