@@ -281,7 +281,14 @@ export abstract class SfdxCommand extends Command {
     if (this.shouldEmitHelp()) {
       const Help = await loadHelpClass(this.config);
       const help = new Help(this.config, this.config.pjson.helpOptions);
-      await help.showHelp(this.argv);
+      try {
+        // @ts-ignore this.statics is of type SfdxCommand, which extends Command which it expects
+        await help.showCommandHelp(this.statics, []);
+      } catch {
+        // fail back to how it was
+        await help.showHelp(this.argv);
+      }
+
       return this.exit(0);
     }
 
