@@ -294,7 +294,7 @@ export class UX {
     if (this.isOutputEnabled) {
       // This is either an array of column names or an already built Partial<OclifTableOptions>
       if (isArray(columns)) {
-        const tableColumns: Partial<CliUx.Table.table.Columns<Record<string, unknown>>> = {};
+        const tableColumns: CliUx.Table.table.Columns<Record<string, unknown>> = {};
         for (const col of columns) {
           tableColumns[col] = {
             header: col
@@ -303,7 +303,7 @@ export class UX {
               .join(' '),
           };
         }
-        this.cli.ux.table(rows, { columns: tableColumns }, options);
+        this.cli.ux.table(rows, tableColumns, options);
       } else {
         this.cli.ux.table(rows, columns, options);
       }
