@@ -318,7 +318,7 @@ describe('UX', () => {
     expect(info.called).to.equal(true);
     expect(info.firstCall.args[0]).to.equal(tableData);
     expect(retVal.x).to.deep.equal(tableData);
-    expect(retVal.y.columns).to.deep.equal(expectedOptions);
+    expect(retVal.y).to.deep.equal(expectedOptions);
     expect(ux1).to.equal(ux);
   });
 
