@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.0.5](https://github.com/salesforcecli/command/compare/v5.0.4...v5.0.5) (2022-04-07)
+
+
+### Bug Fixes
+
+* fix table output with simple columns ([7c8a65a](https://github.com/salesforcecli/command/commit/7c8a65aea364519db6d3c109f983fe145fd33afd))
+
 ### [5.0.4](https://github.com/salesforcecli/command/compare/v5.0.2...v5.0.4) (2022-04-01)
 
 
