@@ -5,7 +5,17 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { Command, loadHelpClass } from '@oclif/core';
-import { ConfigAggregator, Global, Lifecycle, Logger, Messages, Mode, Org, SfError, SfProject } from '@salesforce/core';
+import {
+  Global,
+  Lifecycle,
+  Logger,
+  Messages,
+  Mode,
+  Org,
+  SfdxConfigAggregator,
+  SfError,
+  SfProject,
+} from '@salesforce/core';
 import { env } from '@salesforce/kit';
 import { AnyJson, Dictionary, get, has, isBoolean, JsonMap, Optional } from '@salesforce/ts-types';
 import chalk from 'chalk';
@@ -123,7 +133,7 @@ export abstract class SfdxCommand extends Command {
   protected ux!: UX; // assigned in init
 
   // A configAggregator for this command to reference; assigned in init
-  protected configAggregator!: ConfigAggregator;
+  protected configAggregator!: SfdxConfigAggregator;
 
   // An org instance for this command to reference.
   protected org?: Org;
@@ -329,7 +339,7 @@ export abstract class SfdxCommand extends Command {
     // Verify the command args and flags meet the requirements
     //
 
-    this.configAggregator = await ConfigAggregator.create();
+    this.configAggregator = await SfdxConfigAggregator.create();
 
     // Assign this.project if the command requires to be run from within a project.
     if (this.statics.requiresProject) {
