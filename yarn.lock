@@ -660,10 +660,10 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/core@^3.14.0":
-  version "3.15.1"
-  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.15.1.tgz#8eb6dd48e04c9dffc1a77c29a371cad89705caea"
-  integrity sha512-frPX6TcRiunEoFAFkT1+uibvzF87PINs4uYz3LLANwYkZh5T17QXikXUbZ5avFNJUg5xlb89Pl/1lse3pt7ncg==
+"@salesforce/core@^3.15.2":
+  version "3.15.2"
+  resolved "https://registry.npmjs.org/@salesforce/core/-/core-3.15.2.tgz#5ef70b195f11508ebfbb8663d694de3f9d3c1114"
+  integrity sha512-4ppxgruHGVq6NOAo0qtRCoFyCcXjrWSQEETVNz8WgztCpL06mnAsAPEIFzE2hhGPD38ZFLyeliSIcRA0Lr6Brg==
   dependencies:
     "@salesforce/bunyan" "^2.0.0"
     "@salesforce/kit" "^1.5.34"
