@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.0](https://github.com/salesforcecli/command/compare/v5.0.5...v5.1.0) (2022-05-02)
+
+
+### Features
+
+* use SfdxConfigAggregator ([3287e99](https://github.com/salesforcecli/command/commit/3287e99a48bd0e8bbf49f68d05102a5a39a87f34))
+
 ### [5.0.5](https://github.com/salesforcecli/command/compare/v5.0.4...v5.0.5) (2022-04-07)
 
 
