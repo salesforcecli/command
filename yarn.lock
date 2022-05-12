@@ -660,10 +660,10 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@salesforce/core@^3.15.3":
-  version "3.15.3"
-  resolved "https://registry.npmjs.org/@salesforce/core/-/core-3.15.3.tgz#8e1680839bda62ff7d64afec062c0494d32b7149"
-  integrity sha512-XqvEJG5TkxJ4BFCfws2BETVAhSr1nmyjwH22Yadej6GAu0PHprSHh/T8YG9oR4pLI+5SLddonsuyy7VuPaB5aQ==
+"@salesforce/core@^3.17.0":
+  version "3.17.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/core/-/core-3.17.0.tgz#944705393a11f0378ddf1fb7014c055502191539"
+  integrity sha512-8qQAzDjXZ2I2XCyikEShsP9D+rnd4GZQZQ+6+59wDKYmRTnq1aDlN8u15z1ZcmxyEH4cYLmLdYoalLK8/p+KWg==
   dependencies:
     "@salesforce/bunyan" "^2.0.0"
     "@salesforce/kit" "^1.5.34"
@@ -690,7 +690,7 @@
   resolved "https://registry.yarnpkg.com/@salesforce/dev-config/-/dev-config-3.0.1.tgz#631a952abfd69e7cdb0fb312ba4b1656ae632b90"
   integrity sha512-hkH8g7/bQZvtOfKTb3AmTPo1KopUli31legtb84nF9Y6mKj27TRzWUvIRuaRRd86ma19C7lPA4ycUjydX4QCcQ==
 
-"@salesforce/dev-scripts@^2.0.1":
+"@salesforce/dev-scripts@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@salesforce/dev-scripts/-/dev-scripts-2.0.2.tgz#7a174082806ffd3d0c078d83dfb97bc603c798c4"
   integrity sha512-LApwttqOMTAX0xB8owluwMUClDzafjQY3C6TCKCFgV2R4qCy1QUtG3jrBAtrhK1FxuV7qBvp8S+uqA21TELOGQ==
@@ -4659,7 +4659,7 @@ shebang-regex@^3.0.0:
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-3.0.0.tgz#ae16f1644d873ecad843b0307b143362d4c42172"
   integrity sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
 
-shelljs@^0.8.5, shelljs@~0.8.3, shelljs@~0.8.4:
+shelljs@^0.8.5, shelljs@~0.8.4:
   version "0.8.5"
   resolved "https://registry.yarnpkg.com/shelljs/-/shelljs-0.8.5.tgz#de055408d8361bed66c669d2f000538ced8ee20c"
   integrity sha512-TiwcRcrkhHvbrZbnRcFYMLl30Dfov3HKqzp5tO5b4pt6G/SezKcYhmDg15zXVBswHmctSAQKznqNW2LO5tTDow==
