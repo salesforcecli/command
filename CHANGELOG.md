@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.1.1](https://github.com/salesforcecli/command/compare/v5.1.0...v5.1.1) (2022-05-19)
+
+
+### Bug Fixes
+
+* update `no username` err from core v3 ([e41db48](https://github.com/salesforcecli/command/commit/e41db4876c6c6e1404b572b2f9f7fcd47a6b172e))
+
 ## [5.1.0](https://github.com/salesforcecli/command/compare/v5.0.5...v5.1.0) (2022-05-02)
 
 
