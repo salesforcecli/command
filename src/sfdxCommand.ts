@@ -216,7 +216,7 @@ export abstract class SfdxCommand extends Command {
       }
     } catch (err) {
       if (this.statics.requiresUsername) {
-        if (err instanceof Error && (err.name === 'NoUsername' || err.name === 'AuthInfoCreationError')) {
+        if (err instanceof Error && (err.name === 'NoUsernameFoundError' || err.name === 'AuthInfoCreationError')) {
           throw messages.createError('error.RequiresUsername');
         }
         throw err;
@@ -240,7 +240,7 @@ export abstract class SfdxCommand extends Command {
       // Throw an error if the command requires a devhub and there is no targetdevhubusername
       // flag set and no defaultdevhubusername set.
       if (this.statics.requiresDevhubUsername && err instanceof Error) {
-        if (err.name === 'AuthInfoCreationError' || err.name === 'NoUsername') {
+        if (err.name === 'AuthInfoCreationError' || err.name === 'NoUsernameFoundError') {
           throw messages.createError('error.RequiresDevhubUsername');
         }
         throw SfError.wrap(err);

@@ -838,7 +838,7 @@ describe('SfdxCommand', () => {
   });
 
   it('should throw when a username is required and org create fails', async () => {
-    $$.SANDBOX.stub(Org, 'create').throws('NoUsername');
+    $$.SANDBOX.stub(Org, 'create').throws('NoUsernameFoundError');
     class TestCommand extends BaseTestCommand {}
     TestCommand['requiresUsername'] = true;
 
@@ -857,7 +857,7 @@ describe('SfdxCommand', () => {
   });
 
   it('should emit a cmdError event when a command catches an error', async () => {
-    $$.SANDBOX.stub(Org, 'create').throws('NoUsername');
+    $$.SANDBOX.stub(Org, 'create').throws('NoUsernameFoundError');
     class TestCommand extends BaseTestCommand {
       public static varargs = true;
     }
@@ -883,7 +883,7 @@ describe('SfdxCommand', () => {
   });
 
   it('should NOT throw when supportsUsername and org create fails', async () => {
-    $$.SANDBOX.stub(Org, 'create').throws('NoUsername');
+    $$.SANDBOX.stub(Org, 'create').throws('NoUsernameFoundError');
     class TestCommand extends BaseTestCommand {}
     TestCommand['supportsUsername'] = true;
 
@@ -907,7 +907,7 @@ describe('SfdxCommand', () => {
   });
 
   it('should throw when a devhub username is required and org create fails', async () => {
-    $$.SANDBOX.stub(Org, 'create').throws('NoUsername');
+    $$.SANDBOX.stub(Org, 'create').throws('NoUsernameFoundError');
     class TestCommand extends BaseTestCommand {}
     TestCommand['requiresDevhubUsername'] = true;
 
@@ -926,7 +926,7 @@ describe('SfdxCommand', () => {
   });
 
   it('should NOT throw when supportsDevhubUsername and org create fails', async () => {
-    $$.SANDBOX.stub(Org, 'create').throws('NoUsername');
+    $$.SANDBOX.stub(Org, 'create').throws('NoUsernameFoundError');
     class TestCommand extends BaseTestCommand {}
     TestCommand['supportsDevhubUsername'] = true;
 
