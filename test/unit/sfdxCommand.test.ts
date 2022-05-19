@@ -1473,6 +1473,25 @@ describe('SfdxCommand', () => {
     expect(UX_OUTPUT['errorJson'].length, 'errorJson got called when it should not have').to.equal(0);
   });
 
+  it('should not remove "Error" from the end of SfError', async () => {
+    // Run the command
+    class StderrCommand extends SfdxCommand {
+      public async run() {
+        throw new SfError('Ahhhh!');
+      }
+    }
+    const output = await StderrCommand.run(['--json']);
+    expect(output).to.equal(undefined);
+    expect(process.exitCode).to.equal(1);
+
+    const logJson = UX_OUTPUT['logJson'];
+    expect(logJson.length, 'logJson did not get called with error json').to.equal(1);
+    const json = ensureJsonMap(logJson[0]);
+    expect(json.message, 'logJson did not get called with the right error').to.contains('Ahhhh!');
+    expect(json.name).to.equal('SfError');
+    expect(UX_OUTPUT['errorJson'].length, 'errorJson got called when it should not have').to.equal(0);
+  });
+
   it('should honor the SFDX_JSON_TO_STDOUT on command errors', async () => {
     env.setBoolean('SFDX_JSON_TO_STDOUT', true);
     // Run the command
