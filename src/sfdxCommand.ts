@@ -216,7 +216,7 @@ export abstract class SfdxCommand extends Command {
       }
     } catch (err) {
       if (this.statics.requiresUsername) {
-        if (err instanceof Error && (err.name === 'NoUsername' || err.name === 'AuthInfoCreationError')) {
+        if (err instanceof Error && (err.name === 'NoUsernameFoundError' || err.name === 'AuthInfoCreationError')) {
           throw messages.createError('error.RequiresUsername');
         }
         throw err;
@@ -240,7 +240,7 @@ export abstract class SfdxCommand extends Command {
       // Throw an error if the command requires a devhub and there is no targetdevhubusername
       // flag set and no defaultdevhubusername set.
       if (this.statics.requiresDevhubUsername && err instanceof Error) {
-        if (err.name === 'AuthInfoCreationError' || err.name === 'NoUsername') {
+        if (err.name === 'AuthInfoCreationError' || err.name === 'NoUsernameFoundError') {
           throw messages.createError('error.RequiresDevhubUsername');
         }
         throw SfError.wrap(err);
@@ -376,8 +376,8 @@ export abstract class SfdxCommand extends Command {
 
     // sfdx-core v3 changed error names to end in "Error"
     // to avoid breaking changes across error names across every command that extends SfdxCommand
-    // remove the "Error" from the end of the name
-    err.name = err.name.replace(/Error$/, '');
+    // remove the "Error" from the end of the name except for the generic SfError
+    err.name = err.name === 'SfError' ? 'SfError' : err.name.replace(/Error$/, '');
 
     await this.initLoggerAndUx();
 

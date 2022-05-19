@@ -2,41 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [5.1.0](https://github.com/salesforcecli/command/compare/v5.0.5...v5.1.0) (2022-05-02)
+### [5.1.2](https://github.com/salesforcecli/command/compare/v5.1.1...v5.1.2) (2022-05-19)
 
+### Bug Fixes
+
+- don't mangle SfError name ([#85](https://github.com/salesforcecli/command/issues/85)) ([78e9ea0](https://github.com/salesforcecli/command/commit/78e9ea0df7b2d786f7c26eb487cd6e732ed04c5c))
+
+### [5.1.1](https://github.com/salesforcecli/command/compare/v5.1.0...v5.1.1) (2022-05-19)
+
+### Bug Fixes
+
+- update `no username` err from core v3 ([e41db48](https://github.com/salesforcecli/command/commit/e41db4876c6c6e1404b572b2f9f7fcd47a6b172e))
+
+## [5.1.0](https://github.com/salesforcecli/command/compare/v5.0.5...v5.1.0) (2022-05-02)
 
 ### Features
 
-* use SfdxConfigAggregator ([3287e99](https://github.com/salesforcecli/command/commit/3287e99a48bd0e8bbf49f68d05102a5a39a87f34))
+- use SfdxConfigAggregator ([3287e99](https://github.com/salesforcecli/command/commit/3287e99a48bd0e8bbf49f68d05102a5a39a87f34))
 
 ### [5.0.5](https://github.com/salesforcecli/command/compare/v5.0.4...v5.0.5) (2022-04-07)
 
-
 ### Bug Fixes
 
-* fix table output with simple columns ([7c8a65a](https://github.com/salesforcecli/command/commit/7c8a65aea364519db6d3c109f983fe145fd33afd))
+- fix table output with simple columns ([7c8a65a](https://github.com/salesforcecli/command/commit/7c8a65aea364519db6d3c109f983fe145fd33afd))
 
 ### [5.0.4](https://github.com/salesforcecli/command/compare/v5.0.2...v5.0.4) (2022-04-01)
 
-
 ### Bug Fixes
 
-* no-truncate:true on tables, matches previous behavior ([d296dfc](https://github.com/salesforcecli/command/commit/d296dfc94bea4a2e07d2c74d405eb6f9964c43f5))
-* use showCommandHelp not showHelp ([9b139d9](https://github.com/salesforcecli/command/commit/9b139d937f1ee83ea2f881f2ba754feb779e0129))
+- no-truncate:true on tables, matches previous behavior ([d296dfc](https://github.com/salesforcecli/command/commit/d296dfc94bea4a2e07d2c74d405eb6f9964c43f5))
+- use showCommandHelp not showHelp ([9b139d9](https://github.com/salesforcecli/command/commit/9b139d937f1ee83ea2f881f2ba754feb779e0129))
 
 ### [5.0.2](https://github.com/salesforcecli/command/compare/v5.0.1...v5.0.2) (2022-03-29)
 
-
 ### Bug Fixes
 
-* fix fancy test types and stubs ([507fb91](https://github.com/salesforcecli/command/commit/507fb91da85ddd8b5e5f09d89c98f16e0a6f41bc))
+- fix fancy test types and stubs ([507fb91](https://github.com/salesforcecli/command/commit/507fb91da85ddd8b5e5f09d89c98f16e0a6f41bc))
 
 ### [5.0.1](https://github.com/salesforcecli/command/compare/v5.0.0...v5.0.1) (2022-03-16)
 
-
 ### Bug Fixes
 
-* understand messages.createError ([9a64626](https://github.com/salesforcecli/command/commit/9a646266b2b95ac7c13e216fdb0739b27b30487a))
+- understand messages.createError ([9a64626](https://github.com/salesforcecli/command/commit/9a646266b2b95ac7c13e216fdb0739b27b30487a))
 
 ## [5.0.0](https://github.com/salesforcecli/command/compare/v4.2.2...v5.0.0) (2022-03-11)
 
