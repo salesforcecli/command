@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.1.2](https://github.com/salesforcecli/command/compare/v5.1.1...v5.1.2) (2022-05-19)
+
+
+### Bug Fixes
+
+* don't mangle SfError name ([#85](https://github.com/salesforcecli/command/issues/85)) ([78e9ea0](https://github.com/salesforcecli/command/commit/78e9ea0df7b2d786f7c26eb487cd6e732ed04c5c))
+
 ### [5.1.1](https://github.com/salesforcecli/command/compare/v5.1.0...v5.1.1) (2022-05-19)
 
 
