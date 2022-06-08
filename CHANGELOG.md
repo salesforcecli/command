@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.2.0](https://github.com/salesforcecli/command/compare/v5.1.3...v5.2.0) (2022-06-08)
+
+### Features
+
+- use StateAggregator ([#91](https://github.com/salesforcecli/command/issues/91)) ([f0b2f83](https://github.com/salesforcecli/command/commit/f0b2f836496df95f5a49ad4045051d45a799dae4))
+
 ### [5.1.3](https://github.com/salesforcecli/command/compare/v5.1.2...v5.1.3) (2022-05-26)
 
 ### Bug Fixes
