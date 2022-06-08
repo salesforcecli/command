@@ -59,13 +59,14 @@ const withOrg = (org: Partial<AuthFields> = {}, setAsDefault = true): Plugin<Dic
       // eslint-disable-next-line @typescript-eslint/require-await
       const writeOrg = async function (this: { path: string }): Promise<JsonMap> {
         const foundOrg = asJsonMap(ctx.orgs[org.username as string], {});
-        return (ensure($$.configStubs.GlobalInfo).contents = { orgs: { [org.username as string]: foundOrg } });
+        return (ensure($$.configStubs.AuthInfoConfig).contents = foundOrg);
       };
 
-      $$.configStubs.GlobalInfo = {
+      $$.configStubs.AuthInfoConfig = {
         retrieveContents: readOrg,
         updateContents: writeOrg,
       };
+
       const defaultOrg = find(ctx.orgs, (o) => !!o.default && !o.isDevHub);
       const defaultDevHubOrg = find(ctx.orgs, (o) => !!o.default && !!o.isDevHub);
       $$.configStubs.Config = {

@@ -10,7 +10,7 @@ import { join } from 'path';
 import { URL } from 'url';
 import * as util from 'util';
 import {
-  ConfigAggregator,
+  SfdxConfigAggregator,
   Global,
   Lifecycle,
   Logger,
@@ -131,7 +131,7 @@ describe('SfdxCommand', () => {
     process.exitCode = 0;
 
     UX_OUTPUT = cloneJson(UX_OUTPUT_BASE);
-    configAggregatorCreate = $$.SANDBOX.stub(ConfigAggregator, 'create').returns(
+    configAggregatorCreate = $$.SANDBOX.stub(SfdxConfigAggregator, 'create').returns(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       Promise.resolve(DEFAULT_INSTANCE_PROPS.configAggregator) as any
     );
@@ -765,7 +765,7 @@ describe('SfdxCommand', () => {
       getInfo: () => ({ value: apiVersion }),
     };
     configAggregatorCreate.restore();
-    configAggregatorCreate = $$.SANDBOX.stub(ConfigAggregator, 'create').returns(configAggregator);
+    configAggregatorCreate = $$.SANDBOX.stub(SfdxConfigAggregator, 'create').returns(configAggregator);
 
     // Run the command
     class TestCommand extends BaseTestCommand {}
@@ -792,7 +792,7 @@ describe('SfdxCommand', () => {
       getInfo: () => ({ value: apiVersion }),
     };
     configAggregatorCreate.restore();
-    configAggregatorCreate = $$.SANDBOX.stub(ConfigAggregator, 'create').returns(configAggregator);
+    configAggregatorCreate = $$.SANDBOX.stub(SfdxConfigAggregator, 'create').returns(configAggregator);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fakeOrg: any = 'fake_org';
     $$.SANDBOX.stub(Org, 'create').returns(fakeOrg);
