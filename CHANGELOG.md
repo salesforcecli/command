@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.2.1](https://github.com/salesforcecli/command/compare/v5.2.0...v5.2.1) (2022-06-27)
+
+### Bug Fixes
+
+- update ~/.sfdx log location to point to ~/.sf ([42eab93](https://github.com/salesforcecli/command/commit/42eab93489c680ebb5dbde6b13fc0dc018b2a48a))
+
 ## [5.2.0](https://github.com/salesforcecli/command/compare/v5.1.3...v5.2.0) (2022-06-08)
 
 ### Features
