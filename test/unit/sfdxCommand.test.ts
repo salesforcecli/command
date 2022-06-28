@@ -5,12 +5,10 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { fail } from 'assert';
 import { join } from 'path';
 import { URL } from 'url';
 import * as util from 'util';
 import {
-  SfdxConfigAggregator,
   Global,
   Lifecycle,
   Logger,
@@ -18,13 +16,14 @@ import {
   Messages,
   Mode,
   Org,
+  SfdxConfigAggregator,
   SfError,
   SfProject,
 } from '@salesforce/core';
 import { testSetup } from '@salesforce/core/lib/testSetup';
 import { cloneJson, Duration, env, isEmpty } from '@salesforce/kit';
 import { stubInterface } from '@salesforce/ts-sinon';
-import { AnyJson, Dictionary, ensureJsonMap, JsonArray, JsonMap, keysOf, Optional } from '@salesforce/ts-types';
+import { AnyJson, Dictionary, ensureJsonMap, JsonArray, JsonMap, keysOf } from '@salesforce/ts-types';
 import { expect } from 'chai';
 import chalk from 'chalk';
 import { SinonStub } from 'sinon';
@@ -40,10 +39,6 @@ const messages = Messages.loadMessages('@salesforce/command', 'flags');
 
 const $$ = testSetup();
 
-const hasErrorProperties = (obj: unknown): obj is { code: string; oclif: { exit: number } } => {
-  const errorMaybe = obj as { code: string; oclif: { exit: number } };
-  return typeof errorMaybe.code === 'string' && errorMaybe.oclif && typeof errorMaybe.oclif.exit === 'number';
-};
 interface TestCommandMeta {
   cmd: typeof SfdxCommand; // the command constructor props
   cmdInstance: SfdxCommand; // the command instance props
@@ -108,23 +103,6 @@ const UX_OUTPUT_BASE = {
 let UX_OUTPUT: typeof UX_OUTPUT_BASE;
 let configAggregatorCreate: SinonStub;
 let jsonToStdout: boolean;
-
-async function mockStdout(test: (outLines: string[]) => Promise<void>) {
-  const oldStdoutWriter = process.stdout.write.bind(process.stdout);
-  const lines: string[] = [];
-  // @ts-ignore
-  process.stdout.write = (message) => {
-    if (message && typeof message === 'string') {
-      lines.push(message);
-    }
-  };
-
-  try {
-    await test(lines);
-  } finally {
-    process.stdout.write = oldStdoutWriter;
-  }
-}
 
 describe('SfdxCommand', () => {
   beforeEach(() => {
@@ -430,89 +408,6 @@ describe('SfdxCommand', () => {
     };
     expect(testCommandMeta.cmdInstance['result']).to.include(expectedResult);
     verifyUXOutput();
-  });
-
-  it('should honor the -h flag to generate help output when the subclass does not define its own flag for -h', async () => {
-    class TestCommand extends BaseTestCommand {}
-
-    return mockStdout(async (lines: string[]) => {
-      let output: Optional<string>;
-      try {
-        output = await TestCommand.run(['-h']);
-        fail('Expected EEXIT error');
-      } catch (err) {
-        if (!hasErrorProperties(err)) {
-          fail('Invalid error');
-        }
-        expect(err.code).to.equal('EEXIT');
-        expect(err.oclif.exit).to.equal(0);
-      }
-
-      expect(output).to.equal(undefined);
-      expect(process.exitCode).to.equal(0);
-
-      // Check that the first line of the logged output is `USAGE` once ANSI colors have been removed
-      expect(lines.length).to.be.gte(1);
-      // eslint-disable-next-line no-control-regex
-      const help = lines[0].slice(0, lines[0].indexOf('\n')).replace(/\u001b\[[0-9]+m/g, '');
-      expect(help).to.equal('Salesforce CLI base command class');
-    });
-  });
-
-  it('should honor the -h flag to generate help output, even when the subclass defines its own help flag', () => {
-    class TestCommand extends BaseTestCommand {
-      public static flagsConfig = {
-        help: flags.help({ char: 'h' }),
-      };
-    }
-
-    return mockStdout(async (lines: string[]) => {
-      // Run the command
-
-      let output: Optional<string>;
-      try {
-        output = await TestCommand.run(['-h']);
-        fail('Expected EEXIT error');
-      } catch (err) {
-        if (!hasErrorProperties(err)) {
-          fail('Invalid error');
-        }
-        expect(err.code).to.equal('EEXIT');
-        expect(err.oclif.exit).to.equal(0);
-      }
-
-      expect(output).to.equal(undefined);
-      expect(process.exitCode).to.equal(0);
-      // Check that the first line of the logged output is `USAGE` once ANSI colors have been removed
-      expect(lines.length).to.be.gte(1);
-      // eslint-disable-next-line no-control-regex
-      const help = lines[0].slice(0, lines[0].indexOf('\n')).replace(/\u001b\[[0-9]+m/g, '');
-      expect(help).to.equal('Salesforce CLI base command class');
-    });
-  });
-
-  it('should not honor the -h flag to generate help output when used for another purpose by the subclass', () => {
-    class TestCommand extends BaseTestCommand {
-      public static flagsConfig = {
-        foo: flags.boolean({ char: 'h', description: 'foo' }),
-      };
-    }
-
-    return mockStdout(async () => {
-      const output = await TestCommand.run(['-h']);
-
-      expect(output).to.equal(TestCommand.output);
-      expect(testCommandMeta.cmd.args, 'TestCommand.args should be undefined').to.equal(undefined);
-      verifyInstanceProps({
-        flags: Object.assign({ foo: true }, DEFAULT_INSTANCE_PROPS.flags),
-      });
-      const expectedResult = {
-        data: TestCommand.output,
-        tableColumnData: undefined,
-      };
-      expect(testCommandMeta.cmdInstance['result']).to.include(expectedResult);
-      verifyUXOutput();
-    });
   });
 
   describe('JSON', () => {
