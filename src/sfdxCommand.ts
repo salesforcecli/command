@@ -4,7 +4,7 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { Command, loadHelpClass } from '@oclif/core';
+import { Command } from '@oclif/core';
 import {
   Global,
   Lifecycle,
@@ -248,25 +248,6 @@ export abstract class SfdxCommand extends Command {
     }
   }
 
-  protected shouldEmitHelp(): boolean {
-    // If -h was given and this command does not define its own flag with `char: 'h'`,
-    // indicate that help should be emitted.
-    if (!this.argv.includes('-h')) {
-      // If -h was not given, nothing else to do here.
-      return false;
-    }
-    // Check each flag config to see if -h has been overridden...
-    const flags = this.statics.flags || {};
-    for (const k of Object.keys(flags)) {
-      if (k !== 'help' && flags[k].char === 'h') {
-        // If -h is configured for anything but help, the subclass should handle it itself.
-        return false;
-      }
-    }
-    // Otherwise, -h was either not overridden by the subclass, or the subclass includes a specific help flag config.
-    return true;
-  }
-
   protected async init(): Promise<void> {
     // If we made it to the init method, the exit code should not be set yet. It will be
     // successful unless the base init or command throws an error.
@@ -286,21 +267,6 @@ export abstract class SfdxCommand extends Command {
     }
 
     await this.initLoggerAndUx();
-
-    // If the -h flag is set in argv and not overridden by the subclass, emit help and exit.
-    if (this.shouldEmitHelp()) {
-      const Help = await loadHelpClass(this.config);
-      const help = new Help(this.config, this.config.pjson.helpOptions);
-      try {
-        // @ts-ignore this.statics is of type SfdxCommand, which extends Command which it expects
-        await help.showCommandHelp(this.statics, []);
-      } catch {
-        // fail back to how it was
-        await help.showHelp(this.argv);
-      }
-
-      return this.exit(0);
-    }
 
     // Finally invoke the super init now that this.ux is properly configured.
     await super.init();
