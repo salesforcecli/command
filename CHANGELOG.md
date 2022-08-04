@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.2.2](https://github.com/salesforcecli/command/compare/v5.2.1...v5.2.2) (2022-08-04)
+
+### Bug Fixes
+
+- removes the -h logic from SfdxCommand, moved to sfdx-cli via OCLIF ([9562a59](https://github.com/salesforcecli/command/commit/9562a596dd6fb89d04370729e257cd3cb4223422))
+
 ### [5.2.1](https://github.com/salesforcecli/command/compare/v5.2.0...v5.2.1) (2022-06-27)
 
 ### Bug Fixes
