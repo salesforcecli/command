@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.2.3](https://github.com/salesforcecli/command/compare/v5.2.2...v5.2.3) (2022-08-05)
+
+### Bug Fixes
+
+- revert removing -h ([0fedb25](https://github.com/salesforcecli/command/commit/0fedb2555b2b01a2dd6a7cc9a60874afa7570b0d))
+
 ### [5.2.2](https://github.com/salesforcecli/command/compare/v5.2.1...v5.2.2) (2022-08-04)
 
 ### Bug Fixes
