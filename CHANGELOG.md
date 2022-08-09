@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.2.4](https://github.com/salesforcecli/command/compare/v5.2.3...v5.2.4) (2022-08-09)
+
+### Bug Fixes
+
+- move @oclif/test from devDep to dep ([28d3089](https://github.com/salesforcecli/command/commit/28d30897b029710b51b44c94064b9fee6b5ae0db))
+
 ### [5.2.3](https://github.com/salesforcecli/command/compare/v5.2.2...v5.2.3) (2022-08-05)
 
 ### Bug Fixes
