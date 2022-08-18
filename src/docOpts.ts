@@ -4,6 +4,9 @@
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
+
 import { Dictionary, ensure, ensureArray, getString, isArray, isBoolean, isPlainObject } from '@salesforce/ts-types';
 import { definiteEntriesOf } from '@salesforce/ts-types';
 import { get } from '@salesforce/ts-types';
@@ -146,7 +149,7 @@ export class DocOpts<T extends typeof SfdxCommand> {
       const remainingFlag = ensure(this.flags[remainingFlagName]);
 
       if (!remainingFlag.required) {
-        elementMap[remainingFlag.name] = `[${elementMap[remainingFlag.name] || ''}]`;
+        elementMap[remainingFlag.name] = `[${elementMap[remainingFlag.name] ?? ''}]`;
       }
     }
     return elementMap;
@@ -184,15 +187,15 @@ export class DocOpts<T extends typeof SfdxCommand> {
     }
 
     for (const toCombine of flagNames) {
-      elementMap[flagName] = `${elementMap[flagName] || ''}${unionString}${elementMap[toCombine] || ''}`;
+      elementMap[flagName] = `${elementMap[flagName] ?? ''}${unionString}${elementMap[toCombine] ?? ''}`;
       // We handled this flag, don't handle it again
       delete elementMap[toCombine];
       delete this.flags[toCombine];
     }
     if (isRequired) {
-      elementMap[flagName] = `(${elementMap[flagName] || ''})`;
+      elementMap[flagName] = `(${elementMap[flagName] ?? ''})`;
     } else {
-      elementMap[flagName] = `[${elementMap[flagName] || ''}]`;
+      elementMap[flagName] = `[${elementMap[flagName] ?? ''}]`;
     }
     // We handled this flag, don't handle it again
     delete this.flags[flagName];
@@ -245,6 +248,7 @@ export class DocOpts<T extends typeof SfdxCommand> {
    * @param elementMap The map to add the elements to.
    * @param flagGroups The flags to generate elements for.
    */
+  // eslint-disable-next-line class-methods-use-this
   private generateElements(elementMap: Dictionary<string> = {}, flagGroups: FlagsType): string[] {
     const elementStrs = [];
     for (const flag of flagGroups) {

@@ -69,7 +69,7 @@ const messages = Messages.load('@salesforce/command', 'flags', [
 
 function validateValue(isValid: boolean, value: string, kind: string, correct?: string): string {
   if (isValid) return value;
-  throw messages.createError('error.InvalidFlagType', [value, kind, correct || '']);
+  throw messages.createError('error.InvalidFlagType', [value, kind, correct ?? '']);
 }
 
 function toValidatorFn(validator?: unknown): (val: string) => boolean {
@@ -178,15 +178,15 @@ function buildHelp(options: flags.BaseBoolean<boolean>): flags.Discriminated<fla
 }
 
 function buildFilepath(options: flags.String): flags.Discriminated<flags.String> {
-  return option('filepath', options, (val: string) => {
-    return Promise.resolve(validateValue(sfdc.validatePathDoesNotContainInvalidChars(val), val, 'filepath'));
-  });
+  return option('filepath', options, (val: string) =>
+    Promise.resolve(validateValue(sfdc.validatePathDoesNotContainInvalidChars(val), val, 'filepath'))
+  );
 }
 
 function buildDirectory(options: flags.String): flags.Discriminated<flags.String> {
-  return option('directory', options, (val: string) => {
-    return Promise.resolve(validateValue(sfdc.validatePathDoesNotContainInvalidChars(val), val, 'directory'));
-  });
+  return option('directory', options, (val: string) =>
+    Promise.resolve(validateValue(sfdc.validatePathDoesNotContainInvalidChars(val), val, 'directory'))
+  );
 }
 
 function validateBounds<T>(
@@ -322,17 +322,22 @@ function buildDatetime(options: flags.DateTime): flags.Discriminated<flags.DateT
 }
 
 function buildEmail(options: flags.String): flags.Discriminated<flags.String> {
-  return option('email', options, (val: string): Promise<string> => {
-    return Promise.resolve(validateValue(sfdc.validateEmail(val), val, 'email'));
-  });
+  return option(
+    'email',
+    options,
+    (val: string): Promise<string> => Promise.resolve(validateValue(sfdc.validateEmail(val), val, 'email'))
+  );
 }
 
 function buildId(options: flags.String): flags.Discriminated<flags.String> {
-  return option('id', options, (val: string): Promise<string> => {
-    return Promise.resolve(
-      validateValue(sfdc.validateSalesforceId(val), val, 'id', ` ${messages.getMessage('error.FormattingMessageId')}`)
-    );
-  });
+  return option(
+    'id',
+    options,
+    (val: string): Promise<string> =>
+      Promise.resolve(
+        validateValue(sfdc.validateSalesforceId(val), val, 'id', ` ${messages.getMessage('error.FormattingMessageId')}`)
+      )
+  );
 }
 
 function buildMilliseconds(options: flags.Milliseconds): flags.Discriminated<flags.Milliseconds> {
@@ -541,7 +546,7 @@ function resolve(opts: Optional<flags.Builtin>, key: keyof flags.Builtin, def: s
 export const optionalBuiltinFlags = {
   apiversion(opts?: flags.Builtin): flags.Discriminated<flags.String> {
     return Object.assign(
-      opts || {},
+      opts ?? {},
       flags.string({
         description: resolve(opts, 'description', messages.getMessage('flags.apiversion.description')),
         longDescription: resolve(opts, 'longDescription', messages.getMessage('flags.apiversion.description.long')),
@@ -555,7 +560,7 @@ export const optionalBuiltinFlags = {
 
   concise(opts?: flags.Builtin): flags.Discriminated<flags.Boolean<boolean>> {
     return Object.assign(
-      opts || {},
+      opts ?? {},
       flags.boolean({
         description: resolve(opts, 'description', messages.getMessage('flags.concise.description')),
         longDescription: resolve(opts, 'longDescription', messages.getMessage('flags.long.description.long')),
@@ -565,7 +570,7 @@ export const optionalBuiltinFlags = {
 
   quiet(opts?: flags.Builtin): flags.Discriminated<flags.Boolean<boolean>> {
     return Object.assign(
-      opts || {},
+      opts ?? {},
       flags.boolean({
         description: resolve(opts, 'description', messages.getMessage('flags.quiet.description')),
         longDescription: resolve(opts, 'longDescription', messages.getMessage('flags.quiet.description.long')),
@@ -575,7 +580,7 @@ export const optionalBuiltinFlags = {
 
   targetdevhubusername(opts?: flags.Builtin): flags.Discriminated<flags.String> {
     return Object.assign(
-      opts || {},
+      opts ?? {},
       flags.string({
         char: 'v',
         description: resolve(opts, 'description', messages.getMessage('flags.targetdevhubusername.description')),
@@ -590,7 +595,7 @@ export const optionalBuiltinFlags = {
 
   targetusername(opts?: flags.Builtin): flags.Discriminated<flags.String> {
     return Object.assign(
-      opts || {},
+      opts ?? {},
       flags.string({
         char: 'u',
         description: resolve(opts, 'description', messages.getMessage('flags.targetusername.description')),
@@ -601,7 +606,7 @@ export const optionalBuiltinFlags = {
 
   verbose(opts?: flags.Builtin): flags.Discriminated<flags.Boolean<boolean>> {
     return Object.assign(
-      opts || {},
+      opts ?? {},
       flags.boolean({
         description: resolve(opts, 'description', messages.getMessage('flags.verbose.description')),
         longDescription: resolve(opts, 'longDescription', messages.getMessage('flags.verbose.description.long')),

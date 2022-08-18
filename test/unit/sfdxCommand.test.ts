@@ -5,6 +5,9 @@
  * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable class-methods-use-this */
+
 import { fail } from 'assert';
 import { join } from 'path';
 import { URL } from 'url';
@@ -353,7 +356,7 @@ describe('SfdxCommand', () => {
     class ApiVersionCommand extends SfdxCommand {
       protected static requiresUsername = true;
       public async run() {
-        expect(this.org && this.org.getConnection().getApiVersion()).to.equal('40.0');
+        expect(this.org?.getConnection().getApiVersion()).to.equal('40.0');
         return { finished: true };
       }
     }
@@ -1152,65 +1155,41 @@ describe('SfdxCommand', () => {
       }
     }
 
-    it('should validate date flag type for invalid date', async () => {
-      return validateFlag('date', 'this is a date', true);
-    });
+    it('should validate date flag type for invalid date', async () => validateFlag('date', 'this is a date', true));
 
-    it('should validate datetime flag type for invalid date', async () => {
-      return validateFlag('datetime', '01-02-2018', false);
-    });
+    it('should validate datetime flag type for invalid date', async () =>
+      validateFlag('datetime', '01-02-2018', false));
 
-    it('should validate email flag type for invalid email', async () => {
-      return validateFlag('email', 'this is my email', true);
-    });
+    it('should validate email flag type for invalid email', async () =>
+      validateFlag('email', 'this is my email', true));
 
-    it('should validate email flag type for a valid email', async () => {
-      return validateFlag('email', 'me@my.org', false);
-    });
+    it('should validate email flag type for a valid email', async () => validateFlag('email', 'me@my.org', false));
 
-    it('should validate email flag type for invalid email', async () => {
-      return validateFlag('email', 'me@my.', true);
-    });
+    it('should validate email flag type for invalid email', async () => validateFlag('email', 'me@my.', true));
 
-    it('should validate array flag type for an array', async () => {
-      return validateFlag('array', 'one,two,three', false);
-    });
+    it('should validate array flag type for an array', async () => validateFlag('array', 'one,two,three', false));
 
-    it('should validate id flag type for a salesforce id', async () => {
-      return validateFlag('id', 'a07B0000003uuuuuuu', false);
-    });
+    it('should validate id flag type for a salesforce id', async () => validateFlag('id', 'a07B0000003uuuuuuu', false));
 
-    it('should validate id flag type for an invalid salesforce id', async () => {
-      return validateFlag('id', 'a07B0000003', true);
-    });
+    it('should validate id flag type for an invalid salesforce id', async () =>
+      validateFlag('id', 'a07B0000003', true));
 
-    it('should validate id flag type for an invalid chars salesforce id', async () => {
-      return validateFlag('id', 'a07B00000&*3uuuuuuu', true);
-    });
+    it('should validate id flag type for an invalid chars salesforce id', async () =>
+      validateFlag('id', 'a07B00000&*3uuuuuuu', true));
 
-    it('should validate number flag type for an integer', async () => {
-      return validateFlag('number', '42', false);
-    });
+    it('should validate number flag type for an integer', async () => validateFlag('number', '42', false));
 
-    it('should validate number flag type for a float', async () => {
-      return validateFlag('number', '42.0', false);
-    });
+    it('should validate number flag type for a float', async () => validateFlag('number', '42.0', false));
 
-    it('should validate number flag type for a number with chars', async () => {
-      return validateFlag('number', '42foo', true);
-    });
+    it('should validate number flag type for a number with chars', async () => validateFlag('number', '42foo', true));
 
-    it('should validate number flag type for zero', async () => {
-      return validateFlag('number', '0', false);
-    });
+    it('should validate number flag type for zero', async () => validateFlag('number', '0', false));
 
-    it('should validate url flag type for a url that contains whitespace', async () => {
-      return validateFlag('url', 'this is a url', true);
-    });
+    it('should validate url flag type for a url that contains whitespace', async () =>
+      validateFlag('url', 'this is a url', true));
 
-    it('should validate url flag type for a url that is valid', async () => {
-      return validateFlag('url', 'htttp://salesforce.com', false);
-    });
+    it('should validate url flag type for a url that is valid', async () =>
+      validateFlag('url', 'htttp://salesforce.com', false));
 
     function validateFlagAttributes(output: unknown, errName: string, flagName: string) {
       const sfError = messages.createError(errName, [flagName]);

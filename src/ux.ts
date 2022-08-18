@@ -58,14 +58,14 @@ export class UX {
    * Do not directly construct instances of this class -- use {@link UX.create} instead.
    */
   public constructor(private logger: Logger, isOutputEnabled?: boolean, ux?: typeof CliUx) {
-    this.cli = ux || CliUx;
+    this.cli = ux ?? CliUx;
 
     if (isBoolean(isOutputEnabled)) {
       this.isOutputEnabled = isOutputEnabled;
     } else {
       // Respect the --json flag and SFDX_CONTENT_TYPE for consumers who don't explicitly check
       const isContentTypeJSON = env.getString('SFDX_CONTENT_TYPE', '').toUpperCase() === 'JSON';
-      this.isOutputEnabled = !(process.argv.find((arg) => arg === '--json') || isContentTypeJSON);
+      this.isOutputEnabled = !(process.argv.find((arg) => arg === '--json') ?? isContentTypeJSON);
     }
   }
 
