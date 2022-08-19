@@ -393,7 +393,10 @@ export abstract class SfdxCommand extends Command {
     // sfdx-core v3 changed error names to end in "Error"
     // to avoid breaking changes across error names across every command that extends SfdxCommand
     // remove the "Error" from the end of the name except for the generic SfError
-    err.name = err.name === 'SfError' ? 'SfError' : err.name?.replace(/Error$/, '');
+
+    if (err instanceof Error) {
+      err.name = err.name === 'SfError' ? 'SfError' : err.name.replace(/Error$/, '');
+    }
 
     await this.initLoggerAndUx();
 
