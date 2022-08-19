@@ -13,6 +13,7 @@ import { SfdxCommand } from '../../src/sfdxCommand';
 import { flags, FlagsConfig } from '../../src/sfdxFlags';
 
 class TestCommand extends SfdxCommand {
+  // eslint-disable-next-line class-methods-use-this
   public async run(): Promise<AnyJson> {
     return {};
   }
