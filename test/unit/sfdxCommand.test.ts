@@ -1637,6 +1637,27 @@ describe('format', () => {
     expect(new TestCommand([], config).format(sfError)).to.deep.equal(expectedFormat);
   });
 
+  it('should return expected formatting with full stack trace (in dev mode)', () => {
+    // Set the mode to DEVELOPMENT
+    $$.SANDBOX.stub(Global, 'getEnvironmentMode').returns(Mode.DEVELOPMENT);
+
+    const message = "it's a trap!";
+    const name = 'BadError';
+
+    const error = new Error(message);
+    error.name = name;
+    error.stack = 'stack for BadError';
+
+    const sfError = SfError.wrap(error);
+
+    const stackMsg = `\n*** Internal Diagnostic ***\n\n${sfError.fullStack}\n******\n`;
+    const expectedFormat = ['ERROR: ', message, stackMsg];
+
+    const config = stubInterface<FlagsConfig>($$.SANDBOX);
+    // @ts-ignore
+    expect(new TestCommand([], config).format(sfError)).to.deep.equal(expectedFormat);
+  });
+
   it('should return generate usage by default', () => {
     expect(TestCommand.usage).to.contain('[-f <string>]');
   });

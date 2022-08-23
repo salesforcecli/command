@@ -412,7 +412,7 @@ export abstract class SfdxCommand extends Command {
       { result: error.data, status: error.exitCode },
       {
         ...error.toObject(),
-        stack: error.stack,
+        stack: error.fullStack ?? error.stack,
         warnings: Array.from(UX.warnings),
         // keep commandName key for backwards compatibility
         commandName: error.context,
@@ -556,8 +556,10 @@ export abstract class SfdxCommand extends Command {
         });
       }
     }
-    if (error.stack && Global.getEnvironmentMode() === Mode.DEVELOPMENT) {
-      colorizedArgs.push(chalk.red(`\n*** Internal Diagnostic ***\n\n${error.stack}\n******\n`));
+    // Prefer the fullStack if one exists, which includes the "caused by".
+    const stack = error.fullStack ?? error.stack;
+    if (stack && Global.getEnvironmentMode() === Mode.DEVELOPMENT) {
+      colorizedArgs.push(chalk.red(`\n*** Internal Diagnostic ***\n\n${stack}\n******\n`));
     }
 
     return colorizedArgs;
