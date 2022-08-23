@@ -19,7 +19,7 @@ import {
 import { env } from '@salesforce/kit';
 import { AnyJson, Dictionary, get, has, isBoolean, JsonMap, Optional } from '@salesforce/ts-types';
 import chalk from 'chalk';
-import { OutputArgs, OutputFlags } from '@oclif/core/lib/interfaces';
+import { HelpOptions, OutputArgs, OutputFlags } from '@oclif/core/lib/interfaces';
 import { DocOpts } from './docOpts';
 import { buildSfdxFlags, flags as Flags, FlagsConfig } from './sfdxFlags';
 import { Deprecation, DeprecationDefinition, TableColumns, UX } from './ux';
@@ -91,11 +91,6 @@ export type VarargsConfig =
  * @see https://github.com/oclif/command
  */
 export abstract class SfdxCommand extends Command {
-  // TypeScript does not yet have assertion-free polymorphic access to a class's static side from the instance side
-  protected get statics(): typeof SfdxCommand {
-    return this.constructor as typeof SfdxCommand;
-  }
-
   // Set to true to add the "targetusername" flag to this command.
   protected static supportsUsername = false;
 
@@ -161,6 +156,26 @@ export abstract class SfdxCommand extends Command {
 
   private isJson = false;
 
+  // Overrides @oclif/command static flags property.  Adds username flags
+  // if the command supports them.  Builds flags defined by the command's
+  // flagsConfig static property.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public static get flags(): Flags.Input<any> {
+    return buildSfdxFlags(this.flagsConfig, {
+      targetdevhubusername: this.supportsDevhubUsername || this.requiresDevhubUsername,
+      targetusername: this.supportsUsername || this.requiresUsername,
+    });
+  }
+
+  public static get usage(): string {
+    return DocOpts.generate(this);
+  }
+
+  // TypeScript does not yet have assertion-free polymorphic access to a class's static side from the instance side
+  protected get statics(): typeof SfdxCommand {
+    return this.constructor as typeof SfdxCommand;
+  }
+
   public static getVarArgsConfig(): Partial<VarargsConfig> | undefined {
     if (isBoolean(this.varargs)) {
       return this.varargs ? {} : undefined;
@@ -211,7 +226,7 @@ export abstract class SfdxCommand extends Command {
         aliasOrUsername: this.flags.targetusername,
         aggregator: this.configAggregator,
       });
-      if (this.flags.apiversion) {
+      if (typeof this.flags.apiversion === 'string') {
         this.org.getConnection().setApiVersion(this.flags.apiversion);
       }
     } catch (err) {
@@ -233,7 +248,7 @@ export abstract class SfdxCommand extends Command {
         aggregator: this.configAggregator,
         isDevHub: true,
       });
-      if (this.flags.apiversion) {
+      if (typeof this.flags.apiversion === 'string') {
         this.hubOrg.getConnection().setApiVersion(this.flags.apiversion);
       }
     } catch (err) {
@@ -290,7 +305,8 @@ export abstract class SfdxCommand extends Command {
     // If the -h flag is set in argv and not overridden by the subclass, emit help and exit.
     if (this.shouldEmitHelp()) {
       const Help = await loadHelpClass(this.config);
-      const help = new Help(this.config, this.config.pjson.helpOptions);
+      // TODO: figure out how to work around oclif's pjson definition which includes [k: string]: any on PJSON
+      const help = new Help(this.config, this.config.pjson.helpOptions as Partial<HelpOptions> | undefined);
       try {
         // @ts-ignore this.statics is of type SfdxCommand, which extends Command which it expects
         await help.showCommandHelp(this.statics, []);
@@ -349,7 +365,7 @@ export abstract class SfdxCommand extends Command {
     // Get the apiVersion from the config aggregator and display a warning
     // if it's overridden.
     const apiVersion = this.configAggregator.getInfo('apiVersion');
-    if (apiVersion && apiVersion.value && !flags.apiversion) {
+    if (apiVersion?.value && !flags.apiversion) {
       this.ux.warn(messages.getMessage('warning.ApiVersionOverride', [JSON.stringify(apiVersion.value)]));
     }
 
@@ -377,14 +393,19 @@ export abstract class SfdxCommand extends Command {
     // sfdx-core v3 changed error names to end in "Error"
     // to avoid breaking changes across error names across every command that extends SfdxCommand
     // remove the "Error" from the end of the name except for the generic SfError
-    err.name = err.name === 'SfError' ? 'SfError' : err.name.replace(/Error$/, '');
+
+    if (err instanceof Error) {
+      err.name = err.name === 'SfError' ? 'SfError' : err.name.replace(/Error$/, '');
+    }
 
     await this.initLoggerAndUx();
 
     // Convert all other errors to SfErrors for consistency and set the command name on the error.
-    const error = SfError.wrap(err);
+    const error = SfError.wrap(err as string | Error);
     error.setContext(this.statics.name);
 
+    // tests rely on the falsiness of zero, and real world code might, too
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     process.exitCode = process.exitCode || error.exitCode || 1;
 
     const userDisplayError = Object.assign(
@@ -418,7 +439,7 @@ export abstract class SfdxCommand extends Command {
     // because TS is strict about the events that can be emitted on process.
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    process.emit('cmdError', err, Object.assign({}, this.flags, this.varargs), this.org || this.hubOrg);
+    process.emit('cmdError', err, Object.assign({}, this.flags, this.varargs), this.org ?? this.hubOrg);
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -459,7 +480,7 @@ export abstract class SfdxCommand extends Command {
       // If any deprecated flags were passed, emit warnings
       for (const flag of Object.keys(this.flags)) {
         const def = this.statics.flagsConfig[flag];
-        if (def && def.deprecated) {
+        if (def?.deprecated) {
           this.ux.warn(
             UX.formatDeprecationWarning({
               name: flag,
@@ -474,7 +495,7 @@ export abstract class SfdxCommand extends Command {
 
   protected getJsonResultObject(
     result = this.result.data,
-    status = process.exitCode || 0
+    status = process.exitCode ?? 0
   ): { status: number; result: AnyJson } {
     return { status, result };
   }
@@ -521,7 +542,7 @@ export abstract class SfdxCommand extends Command {
    */
   protected formatError(error: SfError): string[] {
     const colorizedArgs: string[] = [];
-    const commandName = this.id || error.context;
+    const commandName = this.id ?? error.context;
     const runningWith = commandName ? ` running ${commandName}` : '';
     colorizedArgs.push(chalk.bold(`ERROR${runningWith}: `));
     colorizedArgs.push(chalk.red(error.message));
@@ -574,21 +595,6 @@ export abstract class SfdxCommand extends Command {
         await this.config.runHook(eventName, Object.assign(options, { result }));
       });
     });
-  }
-
-  // Overrides @oclif/command static flags property.  Adds username flags
-  // if the command supports them.  Builds flags defined by the command's
-  // flagsConfig static property.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public static get flags(): Flags.Input<any> {
-    return buildSfdxFlags(this.flagsConfig, {
-      targetdevhubusername: this.supportsDevhubUsername || this.requiresDevhubUsername,
-      targetusername: this.supportsUsername || this.requiresUsername,
-    });
-  }
-
-  public static get usage(): string {
-    return DocOpts.generate(this);
   }
 
   /**

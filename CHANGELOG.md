@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.2.5](https://github.com/salesforcecli/command/compare/v5.2.4...v5.2.5) (2022-08-19)
+
+### Bug Fixes
+
+- handle unnamed errors ([5a5b3e1](https://github.com/salesforcecli/command/commit/5a5b3e13390fba1bc22c0fe5451f3477ff95af94))
+
+### [5.2.4](https://github.com/salesforcecli/command/compare/v5.2.3...v5.2.4) (2022-08-09)
+
+### Bug Fixes
+
+- move @oclif/test from devDep to dep ([28d3089](https://github.com/salesforcecli/command/commit/28d30897b029710b51b44c94064b9fee6b5ae0db))
+
+### [5.2.3](https://github.com/salesforcecli/command/compare/v5.2.2...v5.2.3) (2022-08-05)
+
+### Bug Fixes
+
+- revert removing -h ([0fedb25](https://github.com/salesforcecli/command/commit/0fedb2555b2b01a2dd6a7cc9a60874afa7570b0d))
+
+### [5.2.2](https://github.com/salesforcecli/command/compare/v5.2.1...v5.2.2) (2022-08-04)
+
+### Bug Fixes
+
+- removes the -h logic from SfdxCommand, moved to sfdx-cli via OCLIF ([9562a59](https://github.com/salesforcecli/command/commit/9562a596dd6fb89d04370729e257cd3cb4223422))
+
+### [5.2.1](https://github.com/salesforcecli/command/compare/v5.2.0...v5.2.1) (2022-06-27)
+
+### Bug Fixes
+
+- update ~/.sfdx log location to point to ~/.sf ([42eab93](https://github.com/salesforcecli/command/commit/42eab93489c680ebb5dbde6b13fc0dc018b2a48a))
+
 ## [5.2.0](https://github.com/salesforcecli/command/compare/v5.1.3...v5.2.0) (2022-06-08)
 
 ### Features

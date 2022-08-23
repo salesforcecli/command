@@ -12,7 +12,7 @@ logging level for this command invocation
 
 # flags.loglevel.description.long
 
-The logging level for this command invocation. Logs are stored in $HOME/.sfdx/sfdx.log.
+The logging level for this command invocation. Logs are stored in $HOME/.sf/sf.log.
 
 # flags.apiversion.description
 
