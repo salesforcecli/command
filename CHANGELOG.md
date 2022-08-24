@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.2.6](https://github.com/salesforcecli/command/compare/v5.2.5...v5.2.6) (2022-08-24)
+
+### Bug Fixes
+
+- use sf.fullStack if it exists ([54665ed](https://github.com/salesforcecli/command/commit/54665eddf6f551d58842c1a99507d445cb3f8e08))
+
 ### [5.2.5](https://github.com/salesforcecli/command/compare/v5.2.4...v5.2.5) (2022-08-19)
 
 ### Bug Fixes
