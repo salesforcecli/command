@@ -744,9 +744,9 @@
   integrity sha512-cPph7ibj3DeSzWDFLcLtxOh5fmUlDUY2Ezq43n0V6auVP+l8orxRHjCExHS86SB3QKVgXkC8yYhryXiS8KF7Zw==
 
 "@salesforce/dev-scripts@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@salesforce/dev-scripts/-/dev-scripts-3.0.0.tgz#ac37feb15551d22c8028f61cb9576b975d40c1d6"
-  integrity sha512-rOYf+FXwIvbtHFpFNOH6JokQfQxnKOVBHhZBnPpiU6G/52zbzCWeX7PAoDqt1xKLfq339Wt0Yj8mn9ly5Wm1fg==
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@salesforce/dev-scripts/-/dev-scripts-3.1.0.tgz#e00a5026963b6778cf523e563db9ff56545ae16b"
+  integrity sha512-tmxb9SlF1si71gG2YFr0Bxaecm2T3wiEps1mwESCXGmO6mmAkbppIcOZGQdSM5Mko8VUWoquIl+VMMRgyEY0eA==
   dependencies:
     "@commitlint/cli" "^17.0.3"
     "@commitlint/config-conventional" "^17.0.3"
