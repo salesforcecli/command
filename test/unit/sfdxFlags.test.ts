@@ -94,12 +94,12 @@ describe('SfdxFlags', () => {
           myhelp: flags.help({ description: 'myhelp desc' }),
           myinteger: flags.integer({ description: 'myinteger desc' }),
           mystring: flags.string({ description: 'mystring desc' }),
-          // myoption: flags.option({ description: 'myoption desc', parse: (i: string) => i }),
+          myoption: flags.option({ description: 'myoption desc', parse: (i: string) => Promise.resolve(i) }),
           myversion: flags.version({ description: 'myversion desc' }),
         },
         {}
       );
-      expect(Object.keys(rv).length).to.equal(7);
+      expect(Object.keys(rv).length).to.equal(8);
       containsRequiredFlags(rv);
       expect(rv.mybool).to.include({ description: 'mybool desc', kind: 'boolean' });
       expect(rv.myhelp).to.include({ description: 'myhelp desc', kind: 'help' });

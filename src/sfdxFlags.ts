@@ -6,7 +6,7 @@
  */
 
 import { URL } from 'url';
-import { Flags as OclifFlags } from '@oclif/core';
+import { Flags as OclifFlags, Interfaces } from '@oclif/core';
 import { Logger, LoggerLevel, Messages, sfdc, SfError } from '@salesforce/core';
 import { Duration, toNumber } from '@salesforce/kit';
 import {
@@ -24,14 +24,6 @@ import {
   Omit,
   Optional,
 } from '@salesforce/ts-types';
-import {
-  BooleanFlag,
-  EnumFlagOptions,
-  Flag as OclifFlag,
-  FlagInput,
-  FlagOutput,
-  OptionFlag,
-} from '@oclif/core/lib/interfaces';
 import { Deprecation } from './ux';
 
 Messages.importMessagesDirectory(__dirname);
@@ -83,17 +75,17 @@ function toValidatorFn(validator?: unknown): (val: string) => boolean {
 
 function merge<T>(
   kind: flags.Kind,
-  flag: OptionFlag<T | undefined>,
+  flag: Interfaces.OptionFlag<T | undefined>,
   describable: flags.Describable
 ): flags.Discriminated<flags.Option<T>>;
 function merge<T>(
   kind: flags.Kind,
-  flag: BooleanFlag<T>,
+  flag: Interfaces.BooleanFlag<T>,
   describable: flags.Describable
 ): flags.Discriminated<flags.Boolean<T>>;
 function merge<T>(
   kind: flags.Kind,
-  flag: OclifFlag<T>,
+  flag: Interfaces.Flag<T>,
   describable: flags.Describable
 ): flags.Discriminated<flags.Any<T>> {
   if (has(flag, 'validate') && hasFunction(flag, 'parse')) {
@@ -122,9 +114,9 @@ function option<T>(
 }
 
 export namespace flags {
-  export type Any<T> = Partial<OclifFlag<T>> & SfdxProperties;
+  export type Any<T> = Partial<Interfaces.Flag<T>> & SfdxProperties;
   export type Array<T = string> = Option<T[]> & { delimiter?: string };
-  export type BaseBoolean<T> = Partial<BooleanFlag<T>>;
+  export type BaseBoolean<T> = Partial<Interfaces.BooleanFlag<T>>;
   export type Boolean<T> = BaseBoolean<T> & SfdxProperties;
   export type Bounds<T> = { min?: T; max?: T };
   export type Builtin = { type: 'builtin' } & Partial<SfdxProperties>;
@@ -133,9 +125,9 @@ export namespace flags {
   export type Describable = { description: string; longDescription?: string };
   export type Discriminant = { kind: Kind };
   export type Discriminated<T> = T & Discriminant;
-  export type Enum<T> = EnumFlagOptions<T> & SfdxProperties;
+  export type Enum<T> = Interfaces.EnumFlagOptions<T> & SfdxProperties;
   export type Kind = keyof typeof flags;
-  export type Input<T extends FlagOutput> = FlagInput<T>;
+  export type Input<T extends Interfaces.FlagOutput> = Interfaces.FlagInput<T>;
   export type MappedArray<T> = Omit<flags.Array<T>, 'options'> & { map: (val: string) => T; options?: T[] };
   // allow numeric bounds for back compat
   export type Milliseconds = Option<Duration> & Bounds<Duration | number>;
@@ -143,8 +135,8 @@ export namespace flags {
   export type Minutes = Option<Duration> & Bounds<Duration | number>;
   export type Number = Option<number> & NumericBounds;
   export type NumericBounds = Bounds<number>;
-  export type Option<T> = Partial<OptionFlag<T>> & SfdxProperties & Validatable;
-  export type Output = FlagOutput;
+  export type Option<T> = Partial<Interfaces.OptionFlag<T>> & SfdxProperties & Validatable;
+  export type Output = Interfaces.FlagOutput;
   // allow numeric bounds for back compat
   export type Seconds = Option<Duration> & Bounds<Duration | number>;
   export type SfdxProperties = Describable & Deprecatable;
@@ -220,7 +212,7 @@ function buildInteger(options: flags.Number): flags.Discriminated<flags.Number> 
 }
 
 function buildOption<T>(
-  options: { parse: (val: string, ctx: unknown) => T } & flags.Option<T>
+  options: { parse: (val: string, ctx: unknown) => Promise<T> } & flags.Option<T>
 ): flags.Discriminated<flags.Option<T>> {
   return merge('option', OclifFlags.option(options), options);
 }
