@@ -79,8 +79,12 @@ export class UX {
     let msg: string;
     if (has(def, 'version')) {
       const version = isString(def.version) ? parseInt(def.version, 10) : def.version || 0;
+      // @ts-ignore
       const type = ensure(def.type);
+      // @ts-ignore
       const name = ensure(def.name);
+      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
       msg = `The ${type} "${name}" has been deprecated and will be removed in v${version + 1}.0 or later.`;
     } else {
       msg = def.messageOverride;
