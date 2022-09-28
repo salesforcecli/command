@@ -147,9 +147,6 @@ export namespace flags {
   export type Validatable = { validate?: string | RegExp | ((val: string) => boolean) };
 }
 
-// type Distribute<U> = U extends keyof typeof flags ? flags.Discriminated<U> & flags.SfdxProperties & flags.Validatable: never;
-// export type AnyDiscriminated = Distribute<keyof typeof flags>;
-
 // oclif
 
 function buildBoolean<T = boolean>(options: flags.Boolean<T>): flags.Discriminated<flags.Boolean<T>> {
@@ -736,7 +733,6 @@ export function buildSfdxFlags(
 
   // Process configuration for custom and builtin flags
   definiteEntriesOf(flagsConfig).forEach(([key, flag]) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     if (isBuiltin(flag)) {
       if (!isKeyOf(optionalBuiltinFlags, key)) {
         throw messages.createError('error.UnknownBuiltinFlagType', [key]);
@@ -745,7 +741,6 @@ export function buildSfdxFlags(
       output[key] = optionalBuiltinFlags[key](flag);
     } else {
       // @ts-ignore
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       output[key] = validateCustomFlag<unknown>(key, flag);
     }
   });
