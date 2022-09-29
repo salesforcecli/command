@@ -482,7 +482,6 @@ export abstract class SfdxCommand extends Command {
         const def = this.statics.flagsConfig[flag];
         if (def?.deprecated) {
           this.ux.warn(
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             UX.formatDeprecationWarning({
               name: flag,
               type: 'flag',
