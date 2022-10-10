@@ -1,6 +1,6 @@
 {
   "name": "@salesforce/command",
-  "version": "5.2.10",
+  "version": "5.2.11",
   "description": "Salesforce CLI base command class",
   "main": "lib/exported",
   "repository": "salesforcecli/command",
@@ -44,11 +44,11 @@
   },
   "devDependencies": {
     "@salesforce/dev-config": "^3.0.1",
-    "@salesforce/dev-scripts": "^3.0.0",
+    "@salesforce/dev-scripts": "^3.1.0",
     "@salesforce/prettier-config": "^0.0.2",
     "@salesforce/ts-sinon": "^1.4.0",
-    "@typescript-eslint/eslint-plugin": "^5.38.0",
-    "@typescript-eslint/parser": "^5.38.0",
+    "@typescript-eslint/eslint-plugin": "^5.38.1",
+    "@typescript-eslint/parser": "^5.39.0",
     "chai": "^4.2.0",
     "eslint": "^8.24.0",
     "eslint-config-prettier": "^8.5.0",
