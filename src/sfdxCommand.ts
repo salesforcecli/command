@@ -485,8 +485,9 @@ export abstract class SfdxCommand extends Command {
             UX.formatDeprecationWarning({
               name: flag,
               type: 'flag',
+              // @ts-ignore
               ...def.deprecated,
-            })
+            } as DeprecationDefinition)
           );
         }
       }

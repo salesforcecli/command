@@ -83,11 +83,13 @@ export class DocOpts<T extends typeof SfdxCommand> {
     this.cmd = cmd;
     // Create a new map with references to the flags that we can manipulate.
     this.flags = {};
+    // @ts-ignore
     this.flagList = definiteEntriesOf(this.cmd.flags)
       .filter(([, v]) => !v.hidden)
       .map(([k, v]) => {
         const { description, ...rest } = v;
         const flag = { description: ensure(description), ...rest, name: k };
+        // @ts-ignore
         this.flags[k] = flag;
         return flag;
       });

@@ -96,6 +96,7 @@ function merge<T>(
     };
   }
 
+  // @ts-ignore
   return {
     kind,
     ...flag,
@@ -673,7 +674,10 @@ export type FlagsConfig = {
  * @param {string} key The flag name.
  * @throws SfError If the criteria is not meet.
  */
-function validateCustomFlag<T>(key: string, flag: flags.Boolean<T> | flags.Option<T>): flags.Boolean<T> | flags.Option<T> {
+function validateCustomFlag<T>(
+  key: string,
+  flag: flags.Boolean<T> | flags.Option<T>
+): flags.Boolean<T> | flags.Option<T> {
   if (!/^(?!(?:[-]|[0-9]*$))[a-z0-9-]+$/.test(key)) {
     throw messages.createError('error.InvalidFlagName', [key]);
   }
@@ -720,7 +724,6 @@ export function buildSfdxFlags(
   flagsConfig: FlagsConfig,
   options: { targetdevhubusername?: boolean; targetusername?: boolean }
 ): flags.Output {
-
   // Required flag options for all SFDX commands
   const output: Output = {
     json: requiredBuiltinFlags.json(),
