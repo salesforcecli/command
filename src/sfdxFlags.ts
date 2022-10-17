@@ -6,12 +6,11 @@
  */
 
 import { URL } from 'url';
-import { Flags as OclifFlags } from '@oclif/core';
+import { Flags as OclifFlags, Interfaces } from '@oclif/core';
 import { Logger, LoggerLevel, Messages, sfdc, SfError } from '@salesforce/core';
 import { Duration, toNumber } from '@salesforce/kit';
 import {
   definiteEntriesOf,
-  Dictionary,
   ensure,
   has,
   hasFunction,
@@ -24,14 +23,7 @@ import {
   Omit,
   Optional,
 } from '@salesforce/ts-types';
-import {
-  BooleanFlag,
-  EnumFlagOptions,
-  Flag as OclifFlag,
-  FlagInput,
-  FlagOutput,
-  OptionFlag,
-} from '@oclif/core/lib/interfaces';
+import { CustomOptionFlag } from '@oclif/core/lib/interfaces/parser';
 import { Deprecation } from './ux';
 
 Messages.importMessagesDirectory(__dirname);
@@ -83,17 +75,17 @@ function toValidatorFn(validator?: unknown): (val: string) => boolean {
 
 function merge<T>(
   kind: flags.Kind,
-  flag: OptionFlag<T | undefined>,
+  flag: Interfaces.OptionFlag<T | undefined>,
   describable: flags.Describable
 ): flags.Discriminated<flags.Option<T>>;
 function merge<T>(
   kind: flags.Kind,
-  flag: BooleanFlag<T>,
+  flag: Interfaces.BooleanFlag<T>,
   describable: flags.Describable
 ): flags.Discriminated<flags.Boolean<T>>;
 function merge<T>(
   kind: flags.Kind,
-  flag: OclifFlag<T>,
+  flag: Interfaces.Flag<T>,
   describable: flags.Describable
 ): flags.Discriminated<flags.Any<T>> {
   if (has(flag, 'validate') && hasFunction(flag, 'parse')) {
@@ -104,6 +96,7 @@ function merge<T>(
     };
   }
 
+  // @ts-ignore
   return {
     kind,
     ...flag,
@@ -122,10 +115,11 @@ function option<T>(
 }
 
 export namespace flags {
-  export type Any<T> = Partial<OclifFlag<T>> & SfdxProperties;
+  export type Any<T> = Partial<Interfaces.Flag<T>> & SfdxProperties;
   export type Array<T = string> = Option<T[]> & { delimiter?: string };
-  export type BaseBoolean<T> = Partial<BooleanFlag<T>>;
-  export type Boolean<T> = BaseBoolean<T> & SfdxProperties;
+  export type BaseBoolean<T> = Partial<Interfaces.BooleanFlag<T>>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export type Boolean<T = any> = BaseBoolean<T> & SfdxProperties;
   export type Bounds<T> = { min?: T; max?: T };
   export type Builtin = { type: 'builtin' } & Partial<SfdxProperties>;
   export type DateTime = Option<Date>;
@@ -133,9 +127,9 @@ export namespace flags {
   export type Describable = { description: string; longDescription?: string };
   export type Discriminant = { kind: Kind };
   export type Discriminated<T> = T & Discriminant;
-  export type Enum<T> = EnumFlagOptions<T> & SfdxProperties;
+  export type Enum<T> = Interfaces.EnumFlagOptions<T> & SfdxProperties;
   export type Kind = keyof typeof flags;
-  export type Input<T extends FlagOutput> = FlagInput<T>;
+  export type Input<T extends Interfaces.FlagOutput> = Interfaces.FlagInput<T>;
   export type MappedArray<T> = Omit<flags.Array<T>, 'options'> & { map: (val: string) => T; options?: T[] };
   // allow numeric bounds for back compat
   export type Milliseconds = Option<Duration> & Bounds<Duration | number>;
@@ -143,8 +137,9 @@ export namespace flags {
   export type Minutes = Option<Duration> & Bounds<Duration | number>;
   export type Number = Option<number> & NumericBounds;
   export type NumericBounds = Bounds<number>;
-  export type Option<T> = Partial<OptionFlag<T>> & SfdxProperties & Validatable;
-  export type Output = FlagOutput;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export type Option<T = any> = Partial<CustomOptionFlag<T>> & SfdxProperties & Validatable;
+  export type Output = Interfaces.FlagOutput;
   // allow numeric bounds for back compat
   export type Seconds = Option<Duration> & Bounds<Duration | number>;
   export type SfdxProperties = Describable & Deprecatable;
@@ -167,7 +162,7 @@ function buildEnum<T>(options: flags.Enum<T>): flags.Discriminated<flags.Enum<T>
     options: options.options,
     description: options.description,
     longDescription: options.longDescription,
-  };
+  } as flags.Discriminated<flags.Enum<T>>;
 }
 
 function buildHelp(options: flags.BaseBoolean<boolean>): flags.Discriminated<flags.Boolean<void>> {
@@ -220,13 +215,13 @@ function buildInteger(options: flags.Number): flags.Discriminated<flags.Number> 
 }
 
 function buildOption<T>(
-  options: { parse: (val: string, ctx: unknown) => T } & flags.Option<T>
+  options: { parse: (val: string, ctx: unknown) => Promise<T> } & flags.Option<T>
 ): flags.Discriminated<flags.Option<T>> {
   return merge('option', OclifFlags.option(options), options);
 }
 
 function buildString(options: flags.String): flags.Discriminated<flags.String> {
-  return merge<string>('string', OclifFlags.string(options), options);
+  return option('string', options, (val: string) => Promise.resolve(val));
 }
 
 function buildVersion(options?: flags.BaseBoolean<boolean>): flags.Discriminated<flags.Boolean<void>> {
@@ -634,7 +629,7 @@ export const optionalBuiltinFlags = {
  * ```
  */
 export type FlagsConfig = {
-  [key: string]: Optional<flags.Boolean<unknown> | flags.Option<unknown> | flags.Builtin>;
+  [key: string]: Optional<flags.Boolean | flags.Option | flags.Builtin>;
 
   /**
    * Adds the `apiversion` built-in flag to allow for overriding the API
@@ -679,7 +674,10 @@ export type FlagsConfig = {
  * @param {string} key The flag name.
  * @throws SfError If the criteria is not meet.
  */
-function validateCustomFlag<T>(key: string, flag: flags.Any<T>): flags.Any<T> {
+function validateCustomFlag<T>(
+  key: string,
+  flag: flags.Boolean<T> | flags.Option<T>
+): flags.Boolean<T> | flags.Option<T> {
   if (!/^(?!(?:[-]|[0-9]*$))[a-z0-9-]+$/.test(key)) {
     throw messages.createError('error.InvalidFlagName', [key]);
   }
@@ -700,6 +698,17 @@ function isBuiltin(flag: object): flag is flags.Builtin {
   return hasString(flag, 'type') && flag.type === 'builtin';
 }
 
+type Output = {
+  json: flags.Discriminated<flags.Boolean<boolean>>;
+  loglevel: flags.Discriminated<flags.Enum<string>>;
+  targetdevhubusername?: flags.Discriminated<flags.String>;
+  targetusername?: flags.Discriminated<flags.String>;
+  apiversion?: flags.Discriminated<flags.String>;
+  concise?: flags.Discriminated<flags.Boolean<boolean>>;
+  quiet?: flags.Discriminated<flags.Boolean<boolean>>;
+  verbose?: flags.Discriminated<flags.Boolean<boolean>>;
+};
+
 /**
  * Builds flags for a command given a configuration object.  Supports the following use cases:
  * 1. Enabling common SFDX flags. E.g., { verbose: true }
@@ -714,13 +723,12 @@ function isBuiltin(flag: object): flag is flags.Builtin {
 export function buildSfdxFlags(
   flagsConfig: FlagsConfig,
   options: { targetdevhubusername?: boolean; targetusername?: boolean }
-  // tslint:disable-next-line:no-any matches oclif
 ): flags.Output {
-  const output: Dictionary<flags.Any<unknown>> = {};
-
   // Required flag options for all SFDX commands
-  output.json = requiredBuiltinFlags.json();
-  output.loglevel = requiredBuiltinFlags.loglevel();
+  const output: Output = {
+    json: requiredBuiltinFlags.json(),
+    loglevel: requiredBuiltinFlags.loglevel(),
+  };
 
   if (options.targetdevhubusername) output.targetdevhubusername = optionalBuiltinFlags.targetdevhubusername();
   if (options.targetusername) output.targetusername = optionalBuiltinFlags.targetusername();
@@ -732,8 +740,10 @@ export function buildSfdxFlags(
       if (!isKeyOf(optionalBuiltinFlags, key)) {
         throw messages.createError('error.UnknownBuiltinFlagType', [key]);
       }
+      // @ts-ignore
       output[key] = optionalBuiltinFlags[key](flag);
     } else {
+      // @ts-ignore
       output[key] = validateCustomFlag<unknown>(key, flag);
     }
   });

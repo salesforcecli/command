@@ -156,7 +156,7 @@ export abstract class SfdxCommand extends Command {
 
   private isJson = false;
 
-  // Overrides @oclif/command static flags property.  Adds username flags
+  // Overrides @oclif/core static flags property.  Adds username flags
   // if the command supports them.  Builds flags defined by the command's
   // flagsConfig static property.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -485,8 +485,9 @@ export abstract class SfdxCommand extends Command {
             UX.formatDeprecationWarning({
               name: flag,
               type: 'flag',
+              // @ts-ignore
               ...def.deprecated,
-            })
+            } as DeprecationDefinition)
           );
         }
       }
