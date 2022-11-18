@@ -561,4 +561,16 @@ describe('SfdxFlags', () => {
       });
     });
   });
+
+  describe('parse', () => {
+    it('parse on string flag', async () => {
+      const flag = flags.string({
+        description: 'test',
+        parse: (input: string) => Promise.resolve(input.toUpperCase()),
+      });
+      if (!hasFunction(flag, 'parse')) throw new MissingPropertyError('parse', 'array');
+
+      expect(await flag.parse('foo', undefined, undefined)).to.equal('FOO');
+    });
+  });
 });

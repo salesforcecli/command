@@ -23,7 +23,7 @@ import {
   Omit,
   Optional,
 } from '@salesforce/ts-types';
-import { CustomOptionFlag } from '@oclif/core/lib/interfaces/parser';
+import { CustomOptionFlag, FlagParser } from '@oclif/core/lib/interfaces/parser';
 import { Deprecation } from './ux';
 
 Messages.importMessagesDirectory(__dirname);
@@ -108,7 +108,7 @@ function merge<T>(
 function option<T>(
   kind: flags.Kind,
   options: flags.Option<T>,
-  parse: (val: string, ctx: unknown) => Promise<T>
+  parse: ((val: string, ctx: unknown) => Promise<T>) | FlagParser<T, string>
 ): flags.Discriminated<flags.Option<T>> {
   const flag = OclifFlags.option({ ...options, parse });
   return merge<T>(kind, flag, options);
@@ -221,7 +221,7 @@ function buildOption<T>(
 }
 
 function buildString(options: flags.String): flags.Discriminated<flags.String> {
-  return option('string', options, (val: string) => Promise.resolve(val));
+  return option('string', options, options.parse ?? ((val: string) => Promise.resolve(val)));
 }
 
 function buildVersion(options?: flags.BaseBoolean<boolean>): flags.Discriminated<flags.Boolean<void>> {
@@ -281,7 +281,7 @@ function buildMappedArray<T>(kind: flags.Kind, options: flags.MappedArray<T>): f
 function buildStringArray(kind: flags.Kind, options: flags.Array<string>): flags.Discriminated<flags.Option<string[]>> {
   const { options: values, ...rest } = options;
   const allowed = new Set(values);
-  return option(kind, rest, (val): Promise<string[]> => {
+  return option(kind, rest, (val: string): Promise<string[]> => {
     const vals = convertArrayFlagToArray(val, options.delimiter);
     validateArrayValues(kind, val, vals, options.validate);
     validateArrayOptions(kind, val, vals, allowed);
