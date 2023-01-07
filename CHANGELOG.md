@@ -1,3 +1,12 @@
+## [5.2.38](https://github.com/salesforcecli/command/compare/5.2.37...5.2.38) (2023-01-07)
+
+
+### Bug Fixes
+
+* **deps:** bump @oclif/test from 2.2.17 to 2.2.19 ([63a618c](https://github.com/salesforcecli/command/commit/63a618c0b563ae184e46e65d8423e4e37d01d8b2))
+
+
+
 ## [5.2.37](https://github.com/salesforcecli/command/compare/5.2.36...5.2.37) (2022-12-31)
 
 
