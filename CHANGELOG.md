@@ -1,3 +1,12 @@
+## [5.2.39](https://github.com/salesforcecli/command/compare/5.2.38...5.2.39) (2023-01-07)
+
+
+### Bug Fixes
+
+* **deps:** bump json5 from 1.0.1 to 1.0.2 ([8bd3002](https://github.com/salesforcecli/command/commit/8bd30029bbcb21a6a944ea5e458502b047000b9d))
+
+
+
 ## [5.2.38](https://github.com/salesforcecli/command/compare/5.2.37...5.2.38) (2023-01-07)
 
 
