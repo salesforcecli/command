@@ -38,7 +38,7 @@
     "@oclif/core": "^1.23.0",
     "@oclif/test": "^2.2.19",
     "@salesforce/core": "^3.32.12",
-    "@salesforce/kit": "^1.8.0",
+    "@salesforce/kit": "^1.8.2",
     "@salesforce/ts-types": "^1.7.1",
     "chalk": "^2.4.2"
   },
