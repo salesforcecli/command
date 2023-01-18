@@ -35,8 +35,8 @@
     "!lib/**/*.map"
   ],
   "dependencies": {
-    "@oclif/core": "^1.23.0",
-    "@oclif/test": "^2.2.19",
+    "@oclif/core": "^1.24.1",
+    "@oclif/test": "^2.2.21",
     "@salesforce/core": "^3.32.12",
     "@salesforce/kit": "^1.8.2",
     "@salesforce/ts-types": "^1.7.1",
