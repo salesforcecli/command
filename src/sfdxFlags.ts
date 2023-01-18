@@ -139,7 +139,6 @@ export namespace flags {
   export type NumericBounds = Bounds<number>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export type Option<T = any> = Omit<Partial<CustomOptionFlag<T>>, 'deprecated'> & SfdxProperties & Validatable;
-  // export type Option<T = any> = Omit<Partial<CustomOptionFlag<T>>, 'deprecated'> & SfdxProperties & Validatable;
   export type Output = Interfaces.FlagOutput;
   // allow numeric bounds for back compat
   export type Seconds = Option<Duration> & Bounds<Duration | number>;
