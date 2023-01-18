@@ -1,3 +1,12 @@
+## [5.2.41](https://github.com/salesforcecli/command/compare/5.2.40...5.2.41) (2023-01-18)
+
+
+### Bug Fixes
+
+* deprecation type ([7b66aa9](https://github.com/salesforcecli/command/commit/7b66aa97f889dcc3e7a71c2793ccd32adeaf3ab4))
+
+
+
 ## [5.2.40](https://github.com/salesforcecli/command/compare/5.2.39...5.2.40) (2023-01-08)
 
 
