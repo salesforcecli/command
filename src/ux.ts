@@ -396,7 +396,7 @@ export type Deprecation = {
 /**
  * A deprecation warning message configuration type.  A typical instance can pass `name`,
  * `type`, and `version` for a standard message.  Alternatively, the `messageOverride` can
- * be used as a special case deprecated message.  Used when formating a deprecation message.
+ * be used as a special case deprecated message.  Used when formatting a deprecation message.
  */
 export type DeprecationDefinition = {
   to?: string;

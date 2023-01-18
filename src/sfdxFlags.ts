@@ -115,7 +115,7 @@ function option<T>(
 }
 
 export namespace flags {
-  export type Any<T> = Partial<Interfaces.Flag<T>> & SfdxProperties;
+  export type Any<T> = Omit<Partial<Interfaces.Flag<T>>, 'deprecated'> & SfdxProperties;
   export type Array<T = string> = Option<T[]> & { delimiter?: string };
   export type BaseBoolean<T> = Partial<Interfaces.BooleanFlag<T>>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -138,7 +138,8 @@ export namespace flags {
   export type Number = Option<number> & NumericBounds;
   export type NumericBounds = Bounds<number>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export type Option<T = any> = Partial<CustomOptionFlag<T>> & SfdxProperties & Validatable;
+  export type Option<T = any> = Omit<Partial<CustomOptionFlag<T>>, 'deprecated'> & SfdxProperties & Validatable;
+  // export type Option<T = any> = Omit<Partial<CustomOptionFlag<T>>, 'deprecated'> & SfdxProperties & Validatable;
   export type Output = Interfaces.FlagOutput;
   // allow numeric bounds for back compat
   export type Seconds = Option<Duration> & Bounds<Duration | number>;
@@ -217,7 +218,8 @@ function buildInteger(options: flags.Number): flags.Discriminated<flags.Number> 
 function buildOption<T>(
   options: { parse: (val: string, ctx: unknown) => Promise<T> } & flags.Option<T>
 ): flags.Discriminated<flags.Option<T>> {
-  return merge('option', OclifFlags.option(options), options);
+  const optsFlag = OclifFlags.option(options);
+  return merge('option', optsFlag, options);
 }
 
 function buildString(options: flags.String): flags.Discriminated<flags.String> {
