@@ -1,4 +1,10 @@
-[![NPM](https://img.shields.io/npm/v/@salesforce/command.svg)](https://www.npmjs.com/package/@salesforce/command)
+# :stop_sign: deprecation notice
+
+This library is deprecated. You should migrate to https://github.com/salesforcecli/sf-plugins-core.
+
+A migration guide is provided in the `sf` wiki https://github.com/salesforcecli/cli/wiki/Migrate-Plugins-Built-For-Sfdx
+
+> [![NPM](https://img.shields.io/npm/v/@salesforce/command.svg)](https://www.npmjs.com/package/@salesforce/command)
 
 # Description
 
