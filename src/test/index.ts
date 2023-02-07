@@ -107,6 +107,12 @@ const withProject = (SfProjectJson?: JsonMap): Plugin<unknown> => ({
   },
 });
 
+/**
+ * @deprecated We recommend unit tests test smaller units of code, not entire commands.
+ * For command-level tests, we recommend using NUTs (real-world tests, see https://github.com/salesforcecli/cli-plugins-testkit)
+ * If you have existing tests you want to maintain, import oclif/test directly and make use of TextContext from sfdx-core: https://github.com/forcedotcom/sfdx-core/tree/v3#using-testsetup
+ *
+ */
 const test = oclifTest.test
   .register('withOrg', withOrg)
   .register('withConnectionRequest', withConnectionRequest)

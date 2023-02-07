@@ -114,6 +114,9 @@ function option<T>(
   return merge<T>(kind, flag, options);
 }
 
+/**
+ * @deprecated Use Flags from `@salesforce/sf-plugins-core` instead
+ */
 export namespace flags {
   export type Any<T> = Omit<Partial<Interfaces.Flag<T>>, 'deprecated'> & SfdxProperties;
   export type Array<T = string> = Option<T[]> & { delimiter?: string };

@@ -83,6 +83,9 @@ export type VarargsConfig =
   | boolean;
 
 /**
+ *
+ * @deprecated Use SfCommand from `@salesforce/sf-plugins-core`
+ *
  * A base command that provides convenient access to common SFDX flags, a logger,
  * CLI output formatting, scratch orgs, and devhubs.  Extend this command and set
  * various static properties and a flag configuration to add SFDX behavior.

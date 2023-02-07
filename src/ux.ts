@@ -41,6 +41,7 @@ import { Options as OclifActionOptions } from '@oclif/core/lib/cli-ux/action/bas
 import { IPromptOptions } from '@oclif/core/lib/cli-ux';
 
 /**
+ * @deprecated Use Ux from `@salesforce/sf-plugins-core` instead
  * Utilities for interacting with terminal I/O.
  */
 export class UX {
@@ -394,6 +395,9 @@ export type Deprecation = {
 );
 
 /**
+ *
+ *  @deprecated use deprecation from oclif/core
+ *
  * A deprecation warning message configuration type.  A typical instance can pass `name`,
  * `type`, and `version` for a standard message.  Alternatively, the `messageOverride` can
  * be used as a special case deprecated message.  Used when formatting a deprecation message.
