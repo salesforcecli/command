@@ -1,3 +1,12 @@
+# [5.3.0](https://github.com/salesforcecli/command/compare/5.2.43...5.3.0) (2023-02-07)
+
+
+### Features
+
+* readme and typedoc deprecation ([c9bf31c](https://github.com/salesforcecli/command/commit/c9bf31c7bb519dd5e431730a0d4f44b8199fb79c))
+
+
+
 ## [5.2.43](https://github.com/salesforcecli/command/compare/5.2.42...5.2.43) (2023-01-28)
 
 
