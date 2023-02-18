@@ -1,3 +1,12 @@
+## [5.3.1](https://github.com/salesforcecli/command/compare/5.3.0...5.3.1) (2023-02-18)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/kit from 1.8.2 to 1.8.5 ([53a4612](https://github.com/salesforcecli/command/commit/53a46127500b6e08a5e0e547e00a4472c8c50e27))
+
+
+
 # [5.3.0](https://github.com/salesforcecli/command/compare/5.2.43...5.3.0) (2023-02-07)
 
 
