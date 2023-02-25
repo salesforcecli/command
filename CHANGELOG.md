@@ -1,3 +1,12 @@
+## [5.3.2](https://github.com/salesforcecli/command/compare/5.3.1...5.3.2) (2023-02-25)
+
+
+### Bug Fixes
+
+* **deps:** bump @salesforce/core from 3.33.1 to 3.33.4 ([51be8d4](https://github.com/salesforcecli/command/commit/51be8d4467b9e62d7d0263ffcae6a41553e17d53))
+
+
+
 ## [5.3.1](https://github.com/salesforcecli/command/compare/5.3.0...5.3.1) (2023-02-18)
 
 
