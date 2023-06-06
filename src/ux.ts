@@ -294,7 +294,7 @@ export class UX {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     rows: any[],
     columns: TableColumns = {},
-    options: CliUx.Table.table.Options = { 'no-truncate': true }
+    options: CliUx.Table.table.Options = { 'no-truncate': false }
   ): UX {
     if (this.isOutputEnabled) {
       // This is either an array of column names or an already built Partial<OclifTableOptions>
